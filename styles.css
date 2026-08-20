@@ -490,6 +490,8 @@ body.photo #ui, body.photo #labels { display: none !important; }
   transition: opacity 0.2s ease;
 }
 #photo-hint:hover { opacity: 1; }
+#photo-hint.idle { opacity: 0; }
+#photo-hint.idle:hover { opacity: 1; }
 
 /* Settings modal */
 .modal {

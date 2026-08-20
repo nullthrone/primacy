@@ -224,19 +224,21 @@ export class SkyDome {
       const band = (v - 0.5) * 2;
       for (let x = 0; x < W; x++) {
         const u = x / W;
-        const width = 0.19 + 0.09 * fbm(u * 3, 7.7, 3);
+        const width = 0.12 + 0.06 * fbm(u * 3, 7.7, 3);
         const fall = Math.exp(-(band * band) / (2 * width * width));
-        const clouds = 0.68 + 0.34 * fbm(u * 2.4, v * 7, 4);
-        let inten = fall * clouds * 1.15;
-        const ridge = Math.abs(fbm(u * 2.2, v * 34 + 31, 4));
-        const dust = 1.0 - Math.max(0, 0.72 - ridge * 2.4) * fall;
-        inten *= Math.max(0.15, dust);
+        const clouds = 0.62 + 0.38 * fbm(u * 2.4, v * 7, 4);
+        let inten = fall * clouds * 0.8;
+        // Dust: moderately elongated cells, strongest near the band core.
+        const ridge = Math.abs(fbm(u * 6, v * 10 + 31, 4));
+        const dust = 1.0 - Math.max(0, 0.62 - ridge * 2.0) * fall * fall;
+        inten *= Math.max(0.16, dust);
+        inten += fbm(u * 40, v * 40, 3) * 0.04 * fall; // unresolved star speckle
         const du = Math.min(Math.abs(u - 0.5), 1 - Math.abs(u - 0.5));
-        const core = Math.exp(-(du * du) / 0.012) * Math.exp(-(band * band) / 0.06) * 0.85;
+        const core = Math.exp(-(du * du) / 0.012) * Math.exp(-(band * band) / 0.05) * 0.5;
         const i = (y * W + x) * 4;
-        d[i] = Math.min(255, (0.46 * inten + 0.72 * core) * 255);
-        d[i + 1] = Math.min(255, (0.50 * inten + 0.60 * core) * 255);
-        d[i + 2] = Math.min(255, (0.58 * inten + 0.42 * core) * 255);
+        d[i] = Math.min(255, (0.40 * inten + 0.55 * core) * 255);
+        d[i + 1] = Math.min(255, (0.45 * inten + 0.47 * core) * 255);
+        d[i + 2] = Math.min(255, (0.55 * inten + 0.36 * core) * 255);
         d[i + 3] = 255;
       }
     }

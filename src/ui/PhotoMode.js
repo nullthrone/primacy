@@ -23,12 +23,17 @@ export class PhotoMode {
     this.root.querySelector('.photo-hint-text').textContent = t('ui.photoHint');
     this.root.querySelector('.photo-save').textContent = t('ui.photoSave');
     this.root.hidden = false;
+    this.root.classList.remove('idle');
+    clearTimeout(this._idleTimer);
+    this._idleTimer = setTimeout(() => this.root.classList.add('idle'), 2500);
   }
 
   exit() {
     this.active = false;
     document.body.classList.remove('photo');
     this.root.hidden = true;
+    this.root.classList.remove('idle');
+    clearTimeout(this._idleTimer);
   }
 
   save() {
