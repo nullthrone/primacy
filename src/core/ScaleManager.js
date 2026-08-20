@@ -73,6 +73,11 @@ export class ScaleManager {
     return target.copy(vAU).multiplyScalar(s);
   }
 
+  /** Didactic-only radius (used for build-time layout math). */
+  didacticRadius(rKm) {
+    return Math.max(R_MIN, R_COEF * Math.pow(rKm, R_POW));
+  }
+
   /** Body radius km -> scene units. */
   mapRadius(rKm) {
     const didactic = Math.max(R_MIN, R_COEF * Math.pow(rKm, R_POW));

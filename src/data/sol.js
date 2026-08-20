@@ -77,6 +77,20 @@ export const sol = {
       knowledge: { certainty: 'photographed' },
     },
     {
+      id: 'moon', type: 'moon', parent: 'earth',
+      elements: {
+        kind: 'direct', a: 0.00257184, e: 0.0549, i: 5.145, Om: 125.08, w: 318.15,
+        M0: 135.27, epoch: 2451545.0, periodD: 27.3217,
+      },
+      physical: {
+        radiusKm: 1737.4, massE: 0.0123, rotationH: null, obliquityDeg: 6.68,
+        tidallyLocked: true, tempK: { min: 100, mean: 220, max: 390 }, gravity: 1.62,
+      },
+      material: { kind: 'textured', maps: { day: 'moon' }, fallback: 'moon-rock', tint: 0xb8b4ac },
+      trail: true, labelRank: 3, i18n: 'body.moon',
+      knowledge: { certainty: 'photographed' },
+    },
+    {
       id: 'mars', type: 'planet', parent: 'sun',
       elements: {
         kind: 'standish',
@@ -111,6 +125,38 @@ export const sol = {
       knowledge: { certainty: 'photographed' },
     },
     {
+      id: 'io', type: 'moon', parent: 'jupiter', orbitInParentEquator: true,
+      elements: { kind: 'direct', a: 0.00281889, e: 0.0041, i: 0.05, Om: 0, w: 0, M0: 100, epoch: 2451545.0, periodD: 1.7691 },
+      physical: { radiusKm: 1821.6, massE: 0.015, rotationH: null, obliquityDeg: 0, tidallyLocked: true, tempK: { mean: 110 }, gravity: 1.8 },
+      material: { kind: 'textured', maps: {}, fallback: 'io', tint: 0xd8c26a },
+      trail: true, labelRank: 4, i18n: 'body.io',
+      knowledge: { certainty: 'photographed' },
+    },
+    {
+      id: 'europa', type: 'moon', parent: 'jupiter', orbitInParentEquator: true,
+      elements: { kind: 'direct', a: 0.00448553, e: 0.009, i: 0.47, Om: 0, w: 0, M0: 220, epoch: 2451545.0, periodD: 3.5512 },
+      physical: { radiusKm: 1560.8, massE: 0.008, rotationH: null, obliquityDeg: 0, tidallyLocked: true, tempK: { mean: 102 }, gravity: 1.31 },
+      material: { kind: 'textured', maps: {}, fallback: 'europa', tint: 0xd8cfc0 },
+      trail: true, labelRank: 4, i18n: 'body.europa',
+      knowledge: { certainty: 'photographed' },
+    },
+    {
+      id: 'ganymede', type: 'moon', parent: 'jupiter', orbitInParentEquator: true,
+      elements: { kind: 'direct', a: 0.00715527, e: 0.0013, i: 0.2, Om: 0, w: 0, M0: 30, epoch: 2451545.0, periodD: 7.1546 },
+      physical: { radiusKm: 2634.1, massE: 0.0248, rotationH: null, obliquityDeg: 0, tidallyLocked: true, tempK: { mean: 110 }, gravity: 1.43 },
+      material: { kind: 'textured', maps: {}, fallback: 'ganymede', tint: 0xa89c8c },
+      trail: true, labelRank: 4, i18n: 'body.ganymede',
+      knowledge: { certainty: 'photographed' },
+    },
+    {
+      id: 'callisto', type: 'moon', parent: 'jupiter', orbitInParentEquator: true,
+      elements: { kind: 'direct', a: 0.01258513, e: 0.0074, i: 0.19, Om: 0, w: 0, M0: 310, epoch: 2451545.0, periodD: 16.689 },
+      physical: { radiusKm: 2410.3, massE: 0.018, rotationH: null, obliquityDeg: 0, tidallyLocked: true, tempK: { mean: 134 }, gravity: 1.24 },
+      material: { kind: 'textured', maps: {}, fallback: 'callisto', tint: 0x7a7268 },
+      trail: true, labelRank: 4, i18n: 'body.callisto',
+      knowledge: { certainty: 'photographed' },
+    },
+    {
       id: 'saturn', type: 'planet', parent: 'sun',
       elements: {
         kind: 'standish',
@@ -126,6 +172,14 @@ export const sol = {
       material: { kind: 'textured', maps: { day: 'saturn' }, fallback: 'gasgiant-saturn', tint: 0xe0c89a },
       rings: { innerKm: 74500, outerKm: 140220, maps: { color: 'saturn_ring_color', alpha: 'saturn_ring_alpha' } },
       trail: true, labelRank: 1, i18n: 'body.saturn',
+      knowledge: { certainty: 'photographed' },
+    },
+    {
+      id: 'titan', type: 'moon', parent: 'saturn', orbitInParentEquator: true,
+      elements: { kind: 'direct', a: 0.00816770, e: 0.0288, i: 0.35, Om: 0, w: 0, M0: 15, epoch: 2451545.0, periodD: 15.945 },
+      physical: { radiusKm: 2574.7, massE: 0.0225, rotationH: null, obliquityDeg: 0, tidallyLocked: true, tempK: { mean: 94 }, gravity: 1.35 },
+      material: { kind: 'textured', maps: {}, atmosphere: { kind: 'rim', color: 0xe8a34d, strength: 1.1 }, fallback: 'titan', tint: 0xd89a4a },
+      trail: true, labelRank: 4, i18n: 'body.titan',
       knowledge: { certainty: 'photographed' },
     },
     {
@@ -162,5 +216,54 @@ export const sol = {
       trail: true, labelRank: 2, i18n: 'body.neptune',
       knowledge: { certainty: 'photographed' },
     },
+    {
+      id: 'pluto', type: 'dwarf', parent: 'sun',
+      elements: {
+        kind: 'standish',
+        a: 39.48211675, aDot: -0.00031596, e: 0.24882730, eDot: 0.00005170,
+        I: 17.14001206, IDot: 0.00004818, L: 238.92903833, LDot: 145.20780515,
+        wbar: 224.06891629, wbarDot: -0.04062942, Om: 110.30393684, OmDot: -0.01183482,
+        periodD: 90560,
+      },
+      physical: {
+        radiusKm: 1188.3, massE: 0.0022, rotationH: -153.29, obliquityDeg: 122.53,
+        tempK: { mean: 44 }, gravity: 0.62,
+      },
+      material: { kind: 'textured', maps: { day: 'pluto' }, fallback: 'pluto', tint: 0xc4a988 },
+      trail: true, labelRank: 3, i18n: 'body.pluto',
+      knowledge: { certainty: 'photographed' },
+    },
+    {
+      id: 'ceres', type: 'dwarf', parent: 'sun',
+      elements: {
+        kind: 'direct', a: 2.7675, e: 0.076, i: 10.59, Om: 80.31, w: 73.6,
+        M0: 77.37, epoch: 2451545.0, periodD: 1681.6,
+      },
+      physical: {
+        radiusKm: 469.7, massE: 0.00016, rotationH: 9.074, obliquityDeg: 4,
+        tempK: { mean: 168 }, gravity: 0.28,
+      },
+      material: { kind: 'textured', maps: { day: 'ceres' }, fallback: 'ceres', tint: 0x9a938a },
+      trail: true, labelRank: 3, i18n: 'body.ceres',
+      knowledge: { certainty: 'photographed' },
+    },
+    {
+      id: 'halley', type: 'comet', parent: 'sun',
+      elements: {
+        kind: 'direct', a: 17.834, e: 0.96714, i: 162.26, Om: 58.42, w: 111.33,
+        M0: 0, epoch: 2446470.9, periodD: 27509,
+      },
+      physical: {
+        radiusKm: 5.5, massE: 0.0, rotationH: 52.8, obliquityDeg: 0,
+        tempK: { min: 30, max: 400 }, gravity: 0.0002,
+      },
+      material: { kind: 'comet', fallback: 'comet', tint: 0x9ab2c8 },
+      trail: true, labelRank: 3, i18n: 'body.halley',
+      knowledge: { certainty: 'photographed' },
+    },
+  ],
+  belts: [
+    { id: 'asteroid-belt', aMin: 2.1, aMax: 3.35, count: 6000, thick: 0.05, color: 0x8a7a66, seed: 11, i18n: 'body.asteroidBelt' },
+    { id: 'kuiper-belt', aMin: 30.5, aMax: 48, count: 4000, thick: 0.09, color: 0x7a8496, seed: 23, i18n: 'body.kuiperBelt' },
   ],
 };

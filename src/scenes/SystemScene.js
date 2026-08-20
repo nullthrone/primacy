@@ -1,9 +1,12 @@
 import * as THREE from 'three';
 import { StarBody } from '../bodies/StarBody.js';
 import { PlanetBody } from '../bodies/PlanetBody.js';
+import { CometBody } from '../bodies/CometBody.js';
+import { BeltField } from '../bodies/BeltField.js';
 import { OrbitTrail } from '../orbits/OrbitTrail.js';
 import { keplerPosition, eccentricAnomalyAt, trueAnomalyAt } from '../orbits/Kepler.js';
 import { SkyDome } from './SkyDome.js';
+import { KM_PER_AU } from '../core/ScaleManager.js';
 
 const _vAU = new THREE.Vector3();
 const _vScene = new THREE.Vector3();
@@ -31,9 +34,16 @@ export class SystemScene {
     this.controllers = new Map(); // id -> controller
     this._buildStar(def.star);
     for (const bodyDef of def.bodies) this._buildBody(bodyDef);
+    this._computeMoonScales();
 
     // Update order: parents before children.
     this.order = [...this.controllers.values()].sort((a, b) => a.depth - b.depth);
+
+    this.belts = (def.belts ?? []).map((b) => {
+      const belt = new BeltField(b);
+      this.scene.add(belt.mesh);
+      return belt;
+    });
 
     this.scene.add(new THREE.AmbientLight(0x4a5a74, 0.10));
 
@@ -68,16 +78,23 @@ export class SystemScene {
   }
 
   _buildBody(def) {
-    const body = new PlanetBody(def, this.materials);
+    const body = def.type === 'comet'
+      ? new CometBody(def)
+      : new PlanetBody(def, this.materials);
     body.setRadius(this.scale.mapRadius(def.physical.radiusKm));
 
     const parentCtl = this.controllers.get(def.parent ?? this.def.star.id);
-    parentCtl.group.add(body.group);
+    // Moons flagged as equatorial ride on the parent's tilt group so their
+    // orbits (and Saturn's rings) share the parent's obliquity.
+    const mount = def.orbitInParentEquator && parentCtl.body?.tilt
+      ? parentCtl.body.tilt
+      : parentCtl.group;
+    mount.add(body.group);
 
     let trail = null;
     if (def.trail !== false && def.elements) {
       trail = new OrbitTrail(def.elements, def.material?.tint ?? 0x5a7ca8);
-      parentCtl.group.add(trail.line);
+      mount.add(trail.line);
     }
 
     this.controllers.set(def.id, {
@@ -86,6 +103,38 @@ export class SystemScene {
       trail,
       worldPos: new THREE.Vector3(),
     });
+  }
+
+  /**
+   * Per-parent didactic compression for moon systems: innermost moon lands
+   * at >= 2.2 parent display radii, outermost at <= 12, ratios stay honest.
+   */
+  _computeMoonScales() {
+    const byParent = new Map();
+    for (const ctl of this.controllers.values()) {
+      if (ctl.def.parent && ctl.def.parent !== this.def.star.id && ctl.def.elements) {
+        const arr = byParent.get(ctl.def.parent) ?? [];
+        arr.push(ctl);
+        byParent.set(ctl.def.parent, arr);
+      }
+    }
+    for (const [pid, moons] of byParent) {
+      const parent = this.controllers.get(pid);
+      const R = this.scale.didacticRadius(parent.def.physical.radiusKm);
+      const ds = moons.map((m) => m.def.elements.a * KM_PER_AU);
+      const dMin = Math.min(...ds);
+      const dMax = Math.max(...ds);
+      let pow, coef;
+      if (moons.length === 1 || dMax / dMin < 1.05) {
+        pow = 0.45;
+        coef = (5.5 * R) / Math.pow(dMin, pow);
+      } else {
+        pow = Math.min(0.9, Math.max(0.12, Math.log(12 / 2.2) / Math.log(dMax / dMin)));
+        coef = (2.2 * R) / Math.pow(dMin, pow);
+      }
+      const moonScale = { coef, pow };
+      for (const m of moons) m.def.moonScale = moonScale;
+    }
   }
 
   /** Maps a parent-relative AU vector according to body kind (planet vs moon). */
@@ -108,13 +157,15 @@ export class SystemScene {
         continue;
       }
       const el = ctl.def.elements;
+      let rAU = 0;
       if (el) {
         keplerPosition(el, jd, _vAU);
+        rAU = _vAU.length();
         this._mapRelative(ctl, _vAU, _vScene);
         ctl.group.position.copy(_vScene);
         if (ctl.trail) ctl.trail.setHead(eccentricAnomalyAt(el, jd));
       }
-      ctl.worldPos.copy(ctl.parent.worldPos).add(ctl.group.position);
+      ctl.group.getWorldPosition(ctl.worldPos);
       if (ctl.def.physical.tidallyLocked && el) {
         // Face the parent exactly: spin angle = true longitude + pi.
         const { nu } = trueAnomalyAt(el, jd);
@@ -135,8 +186,13 @@ export class SystemScene {
       const d = _sunDir.length();
       if (d > 1e-9) _sunDir.multiplyScalar(1 / d);
       ctl.body.setSun(_sunDir, starCtl.worldPos, starCtl.body.light.color, ctl.worldPos);
+      if (ctl.kind === 'comet') {
+        ctl.body.updateTails(ctl.worldPos, starCtl.worldPos, this.engine.camera, Math.max(rAU, 0.05), dt);
+      }
       ctl.body.update(dt, this.engine.camera);
     }
+
+    for (const belt of this.belts) belt.update(jd, this.scale.blend);
 
     if (this._trailsDirty) {
       this._rebuildTrails(jd);
@@ -167,6 +223,7 @@ export class SystemScene {
       ctl.body.dispose?.();
       ctl.trail?.dispose();
     }
+    for (const belt of this.belts) belt.dispose();
     this.sky.dispose();
   }
 }
