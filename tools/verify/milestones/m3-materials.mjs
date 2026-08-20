@@ -29,6 +29,7 @@ export default async function run({ app, page, shot, expect, sleep }) {
     window.__APP__.setPaused(true);
     window.__APP__.setJD(2451545.0);
   });
+  await sleep(350); // let a frame propagate the new JD into world positions
 
   // --- Earth: terminator splits day and night side ---
   await page.evaluate(camNear('earth', 9));
