@@ -79,7 +79,12 @@ if (!scriptPath) {
 }
 const milestone = await import(pathToFileURL(resolve(scriptPath)).href);
 const name = basename(scriptPath, '.mjs');
-const urlPath = process.argv[3] || milestone.url || '/index.html';
+let urlPath = process.argv[3] || milestone.url || '/index.html';
+// Headless SwiftShader is far too slow with 8x MSAA — default the runner
+// to the low-quality profile unless a milestone insists otherwise.
+if (!/[?&]q=/.test(urlPath)) {
+  urlPath += (urlPath.includes('?') ? '&' : '?') + 'q=low';
+}
 
 const port = await freePort();
 const server = spawn('python3', ['-m', 'http.server', String(port), '--bind', '127.0.0.1'], {

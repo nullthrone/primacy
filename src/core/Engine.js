@@ -62,6 +62,7 @@ export class Engine {
     // Accumulate draw stats across the whole frame (all composer passes).
     this.renderer.info.autoReset = false;
 
+    this.maxDPR = Math.min(window.devicePixelRatio || 1, 2);
     this.camera = new THREE.PerspectiveCamera(58, 1, 0.01, 5e7);
     this.camera.position.set(0, 8, 26);
 
@@ -69,11 +70,15 @@ export class Engine {
 
     // HDR + MSAA composer target: half-float kills banding in the bloom
     // chain, 8x samples keep lines and limbs clean — without this the
-    // whole post pipeline renders aliased 8-bit.
+    // whole post pipeline renders aliased 8-bit. `?q=low` (used by the
+    // headless verification runner) drops MSAA and DPR for speed.
+    const q = new URLSearchParams(window.location.search).get('q');
+    this.quality = q === 'low' ? 'low' : 'high';
+    if (this.quality === 'low') this.maxDPR = 1;
     const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
     const rt = new THREE.WebGLRenderTarget(size.x, size.y, {
       type: THREE.HalfFloatType,
-      samples: 8,
+      samples: this.quality === 'low' ? 0 : 8,
     });
     this.composer = new EffectComposer(this.renderer, rt);
     this.renderPass = new RenderPass(this.scene, this.camera);
@@ -85,7 +90,6 @@ export class Engine {
     this.composer.addPass(this.outputPass);
     this.composer.addPass(this.gradePass);
 
-    this.maxDPR = Math.min(window.devicePixelRatio || 1, 2);
     // Overlays render after the composer (warp tunnel, compare scene):
     // entries are { scene, camera, enabled }.
     this.overlays = [];
@@ -160,7 +164,7 @@ export class Engine {
 
   renderFrame() {
     this.renderer.info.reset();
-    const dt = Math.min(this._clock.getDelta(), 0.1);
+    const dt = Math.min(this._clock.getDelta(), 0.25);
     if (dt > 0) {
       const inst = 1 / Math.max(dt, 1e-4);
       this._fpsEMA += (inst - this._fpsEMA) * 0.02;
