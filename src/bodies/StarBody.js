@@ -24,7 +24,7 @@ export class StarBody {
     emissive = 1.45,
     granScale = 22,
     lensflare = true,
-    lightIntensity = 2.8,
+    lightIntensity = 3.4,
   } = {}) {
     this.id = id;
     this.teffK = teffK;

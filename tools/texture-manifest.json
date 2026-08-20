@@ -1,0 +1,121 @@
+{
+  "comment": "Ordered candidates per slot. First reachable, byte-validated hit wins. Solar System Scope 2K URLs stay first so re-running the fetch outside a restrictive proxy upgrades quality without code changes.",
+  "slots": {
+    "earth_day": {
+      "minBytes": 30000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_earth_daymap.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_atmos_2048.jpg", "license": "MIT (three.js examples)" }
+      ]
+    },
+    "earth_night": {
+      "minBytes": 30000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_earth_nightmap.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_lights_2048.png", "license": "MIT (three.js examples)" }
+      ]
+    },
+    "earth_clouds": {
+      "minBytes": 20000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_earth_clouds.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_clouds_1024.png", "license": "MIT (three.js examples)" },
+        { "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/earthcloudmap.jpg", "license": "MIT (threex.planets)" }
+      ]
+    },
+    "earth_spec": {
+      "minBytes": 20000, "colorSpace": "linear",
+      "candidates": [
+        { "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_specular_2048.jpg", "license": "MIT (three.js examples)" }
+      ]
+    },
+    "earth_normal": {
+      "minBytes": 20000, "colorSpace": "linear",
+      "candidates": [
+        { "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_normal_2048.jpg", "license": "MIT (three.js examples)" }
+      ]
+    },
+    "moon": {
+      "minBytes": 20000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_moon.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/moon_1024.jpg", "license": "MIT (three.js examples)" }
+      ]
+    },
+    "mercury": {
+      "minBytes": 15000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_mercury.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/mercurymap.jpg", "license": "MIT (threex.planets)" }
+      ]
+    },
+    "venus": {
+      "minBytes": 15000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_venus_atmosphere.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/venusmap.jpg", "license": "MIT (threex.planets)" }
+      ]
+    },
+    "mars": {
+      "minBytes": 15000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_mars.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/marsmap1k.jpg", "license": "MIT (threex.planets)" }
+      ]
+    },
+    "jupiter": {
+      "minBytes": 15000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_jupiter.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/jupitermap.jpg", "license": "MIT (threex.planets)" }
+      ]
+    },
+    "saturn": {
+      "minBytes": 15000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_saturn.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/saturnmap.jpg", "license": "MIT (threex.planets)" }
+      ]
+    },
+    "saturn_ring_color": {
+      "minBytes": 2000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/saturnringcolor.jpg", "license": "MIT (threex.planets)" }
+      ]
+    },
+    "saturn_ring_alpha": {
+      "minBytes": 800, "colorSpace": "linear",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_saturn_ring_alpha.png", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/saturnringpattern.gif", "license": "MIT (threex.planets)" }
+      ]
+    },
+    "uranus": {
+      "minBytes": 5000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_uranus.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/uranusmap.jpg", "license": "MIT (threex.planets)" }
+      ]
+    },
+    "neptune": {
+      "minBytes": 5000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_neptune.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/neptunemap.jpg", "license": "MIT (threex.planets)" }
+      ]
+    },
+    "pluto": {
+      "minBytes": 15000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_pluto.jpg", "license": "CC-BY-4.0 Solar System Scope" },
+        { "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/plutomap1k.jpg", "license": "MIT (threex.planets)" }
+      ]
+    },
+    "ceres": {
+      "minBytes": 15000, "colorSpace": "srgb",
+      "candidates": [
+        { "url": "https://www.solarsystemscope.com/textures/download/2k_ceres_fictional.jpg", "license": "CC-BY-4.0 Solar System Scope" }
+      ]
+    }
+  }
+}

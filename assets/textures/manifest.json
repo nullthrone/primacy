@@ -1,0 +1,117 @@
+{
+  "generated": "fetch-textures",
+  "slots": {
+    "earth_day": {
+      "file": "earth_day.jpg",
+      "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_atmos_2048.jpg",
+      "license": "MIT (three.js examples)",
+      "bytes": 512606,
+      "colorSpace": "srgb"
+    },
+    "earth_night": {
+      "file": "earth_night.png",
+      "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_lights_2048.png",
+      "license": "MIT (three.js examples)",
+      "bytes": 410160,
+      "colorSpace": "srgb"
+    },
+    "earth_clouds": {
+      "file": "earth_clouds.png",
+      "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_clouds_1024.png",
+      "license": "MIT (three.js examples)",
+      "bytes": 226113,
+      "colorSpace": "srgb"
+    },
+    "earth_spec": {
+      "file": "earth_spec.jpg",
+      "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_specular_2048.jpg",
+      "license": "MIT (three.js examples)",
+      "bytes": 223421,
+      "colorSpace": "linear"
+    },
+    "earth_normal": {
+      "file": "earth_normal.jpg",
+      "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/earth_normal_2048.jpg",
+      "license": "MIT (three.js examples)",
+      "bytes": 336774,
+      "colorSpace": "linear"
+    },
+    "moon": {
+      "file": "moon.jpg",
+      "url": "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/moon_1024.jpg",
+      "license": "MIT (three.js examples)",
+      "bytes": 238093,
+      "colorSpace": "srgb"
+    },
+    "mercury": {
+      "file": "mercury.jpg",
+      "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/mercurymap.jpg",
+      "license": "MIT (threex.planets)",
+      "bytes": 285975,
+      "colorSpace": "srgb"
+    },
+    "venus": {
+      "file": "venus.jpg",
+      "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/venusmap.jpg",
+      "license": "MIT (threex.planets)",
+      "bytes": 255067,
+      "colorSpace": "srgb"
+    },
+    "mars": {
+      "file": "mars.jpg",
+      "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/marsmap1k.jpg",
+      "license": "MIT (threex.planets)",
+      "bytes": 525256,
+      "colorSpace": "srgb"
+    },
+    "jupiter": {
+      "file": "jupiter.jpg",
+      "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/jupitermap.jpg",
+      "license": "MIT (threex.planets)",
+      "bytes": 157780,
+      "colorSpace": "srgb"
+    },
+    "saturn": {
+      "file": "saturn.jpg",
+      "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/saturnmap.jpg",
+      "license": "MIT (threex.planets)",
+      "bytes": 70548,
+      "colorSpace": "srgb"
+    },
+    "saturn_ring_color": {
+      "file": "saturn_ring_color.jpg",
+      "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/saturnringcolor.jpg",
+      "license": "MIT (threex.planets)",
+      "bytes": 9307,
+      "colorSpace": "srgb"
+    },
+    "saturn_ring_alpha": {
+      "file": "saturn_ring_alpha.gif",
+      "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/saturnringpattern.gif",
+      "license": "MIT (threex.planets)",
+      "bytes": 27876,
+      "colorSpace": "linear"
+    },
+    "uranus": {
+      "file": "uranus.jpg",
+      "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/uranusmap.jpg",
+      "license": "MIT (threex.planets)",
+      "bytes": 8942,
+      "colorSpace": "srgb"
+    },
+    "neptune": {
+      "file": "neptune.jpg",
+      "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/neptunemap.jpg",
+      "license": "MIT (threex.planets)",
+      "bytes": 48069,
+      "colorSpace": "srgb"
+    },
+    "pluto": {
+      "file": "pluto.jpg",
+      "url": "https://raw.githubusercontent.com/jeromeetienne/threex.planets/master/images/plutomap1k.jpg",
+      "license": "MIT (threex.planets)",
+      "bytes": 325111,
+      "colorSpace": "srgb"
+    }
+  }
+}

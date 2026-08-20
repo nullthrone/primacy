@@ -3,26 +3,25 @@ import * as THREE from 'three';
 const DEG = Math.PI / 180;
 
 /**
- * A planet/moon/dwarf: tilt group (obliquity) -> spin mesh. Material comes
- * from the material factory (Materials.js); until M3 lands a tinted
- * standard material stands in. Built at unit radius, display size via
- * setRadius, so scale transitions are cheap.
+ * A planet/moon/dwarf: tilt group (obliquity) -> spinning surface mesh,
+ * plus extras (clouds, atmosphere shell, rings) provided by the material
+ * factory. Built at unit radius; display size via setRadius, so scale
+ * transitions are cheap.
  */
 export class PlanetBody {
-  constructor(def, material = null) {
+  constructor(def, materials = null) {
     this.def = def;
     this.id = def.id;
     this.group = new THREE.Group();
     this.group.name = `body:${def.id}`;
 
-    // Tilt: rotate the spin axis by obliquity around scene X (the system
-    // plane is XZ, axis default +Y).
+    // Obliquity: rotate the spin axis around scene X (system plane is XZ).
     this.tilt = new THREE.Group();
     this.tilt.rotation.x = (def.physical.obliquityDeg || 0) * DEG;
     this.group.add(this.tilt);
 
     const geo = new THREE.SphereGeometry(1, 64, 32);
-    this.material = material || new THREE.MeshStandardMaterial({
+    this.material = materials?.createFor(def) ?? new THREE.MeshStandardMaterial({
       color: def.material?.tint ?? 0x8899aa,
       roughness: 0.92,
       metalness: 0.0,
@@ -31,7 +30,11 @@ export class PlanetBody {
     this.mesh.name = def.id;
     this.tilt.add(this.mesh);
 
-    this.extras = []; // clouds/atmosphere/rings attach here (M3+)
+    this.extras = materials?.extrasFor(def) ?? [];
+    for (const ex of this.extras) {
+      if (!ex.mesh) continue;
+      (ex.attach === 'group' ? this.group : this.tilt).add(ex.mesh);
+    }
   }
 
   setRadius(r) {
@@ -43,20 +46,24 @@ export class PlanetBody {
     return this.mesh.scale.x;
   }
 
-  /**
-   * Spin angle from simulation time. Tidally locked bodies get their angle
-   * set explicitly by the system scene (from true longitude) instead.
-   */
+  /** Spin from simulation time; tidally locked bodies are set explicitly. */
   updateSpin(jd) {
     const p = this.def.physical;
     if (p.tidallyLocked) return;
     const rotH = p.rotationH || 24;
-    const angle = ((jd * 24) / rotH) * 2 * Math.PI;
-    this.mesh.rotation.y = angle % (2 * Math.PI);
+    const angle = (((jd * 24) / rotH) * 2 * Math.PI) % (2 * Math.PI);
+    this.setSpinAngle(angle);
   }
 
   setSpinAngle(rad) {
     this.mesh.rotation.y = rad;
+    for (const ex of this.extras) ex.onSpin?.(rad);
+  }
+
+  /** Per-frame sun geometry (world space). */
+  setSun(dirWorld, sunPosWorld, sunColor, bodyWorldPos) {
+    this.material.userData.sunHook?.(dirWorld, sunPosWorld, sunColor);
+    for (const ex of this.extras) ex.setSun?.(dirWorld, sunPosWorld, sunColor, bodyWorldPos);
   }
 
   update(dt, camera) {

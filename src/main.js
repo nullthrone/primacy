@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Engine, webgl2Available } from './core/Engine.js';
 import { TimeEngine } from './core/TimeEngine.js';
 import { ScaleManager } from './core/ScaleManager.js';
+import { Materials } from './core/Materials.js';
 import { SystemScene } from './scenes/SystemScene.js';
 import { sol } from './data/sol.js';
 
@@ -14,7 +15,7 @@ function fatal() {
   loadingEl.classList.add('done');
 }
 
-function boot() {
+async function boot() {
   if (!webgl2Available()) {
     fatal();
     return;
@@ -25,7 +26,13 @@ function boot() {
   const scale = new ScaleManager();
   time.setSpeed(250000); // ~2.9 simulated days per second at boot
 
-  const system = new SystemScene({ def: sol, engine, time, scale });
+  const materials = new Materials();
+  const progressEl = document.getElementById('loading-progress');
+  await materials.init((f) => {
+    progressEl.style.width = `${Math.round(f * 100)}%`;
+  });
+
+  const system = new SystemScene({ def: sol, engine, time, scale, materials });
   engine.setScene(system.scene);
 
   engine.onFrame((dt) => {
@@ -45,12 +52,14 @@ function boot() {
 
   const _pos = new THREE.Vector3();
   const app = {
+    controls,
     ready: false,
     version: '1.0.0',
     engine,
     time,
     scale,
     system,
+    materials,
     fps: () => engine.fps,
     setJD: (jd) => time.setJD(jd),
     setSpeed: (s) => time.setSpeed(s),
@@ -80,4 +89,7 @@ function boot() {
   }));
 }
 
-boot();
+boot().catch((err) => {
+  console.error('boot failed', err);
+  fatal();
+});

@@ -23,6 +23,8 @@ export class Engine {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
     this.renderer.autoClear = true;
+    // Accumulate draw stats across the whole frame (all composer passes).
+    this.renderer.info.autoReset = false;
 
     this.camera = new THREE.PerspectiveCamera(58, 1, 0.01, 5e7);
     this.camera.position.set(0, 8, 26);
@@ -111,6 +113,7 @@ export class Engine {
   }
 
   renderFrame() {
+    this.renderer.info.reset();
     const dt = Math.min(this._clock.getDelta(), 0.1);
     if (dt > 0) {
       const inst = 1 / Math.max(dt, 1e-4);

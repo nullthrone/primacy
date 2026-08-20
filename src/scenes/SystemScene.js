@@ -7,6 +7,7 @@ import { SkyDome } from './SkyDome.js';
 
 const _vAU = new THREE.Vector3();
 const _vScene = new THREE.Vector3();
+const _sunDir = new THREE.Vector3();
 
 /**
  * A living star system built from a data definition: star, orbiting
@@ -62,12 +63,12 @@ export class SystemScene {
     this.controllers.set(starDef.id, {
       id: starDef.id, def: starDef, kind: 'star', body: star,
       group: star.group, depth: -1, parent: null,
+      worldPos: new THREE.Vector3(),
     });
   }
 
   _buildBody(def) {
-    const material = this.materials?.createFor(def) ?? null;
-    const body = new PlanetBody(def, material);
+    const body = new PlanetBody(def, this.materials);
     body.setRadius(this.scale.mapRadius(def.physical.radiusKm));
 
     const parentCtl = this.controllers.get(def.parent ?? this.def.star.id);
@@ -83,6 +84,7 @@ export class SystemScene {
       id: def.id, def, kind: def.type, body,
       group: body.group, depth: this._depthOf(def), parent: parentCtl,
       trail,
+      worldPos: new THREE.Vector3(),
     });
   }
 
@@ -112,6 +114,7 @@ export class SystemScene {
         ctl.group.position.copy(_vScene);
         if (ctl.trail) ctl.trail.setHead(eccentricAnomalyAt(el, jd));
       }
+      ctl.worldPos.copy(ctl.parent.worldPos).add(ctl.group.position);
       if (ctl.def.physical.tidallyLocked && el) {
         // Face the parent exactly: spin angle = true longitude + pi.
         const { nu } = trueAnomalyAt(el, jd);
@@ -125,6 +128,13 @@ export class SystemScene {
         ctl.body.updateSpin(jd);
       }
       if (scaleAnimating) ctl.body.setRadius(this.scale.mapRadius(ctl.def.physical.radiusKm));
+
+      // World-space sun geometry for shader materials and extras.
+      const starCtl = this.star;
+      _sunDir.copy(starCtl.worldPos).sub(ctl.worldPos);
+      const d = _sunDir.length();
+      if (d > 1e-9) _sunDir.multiplyScalar(1 / d);
+      ctl.body.setSun(_sunDir, starCtl.worldPos, starCtl.body.light.color, ctl.worldPos);
       ctl.body.update(dt, this.engine.camera);
     }
 
