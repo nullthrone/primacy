@@ -40,7 +40,7 @@ export const ross128 = {
         fallback: 'mars', tint: 0xb89a6a,
       },
       trail: true, labelRank: 1, i18n: 'body.ross128B',
-      knowledge: { certainty: 'msini', mSinI: 1.40, radiusKm: null },
+      knowledge: { certainty: 'msini', mSinI: 1.40, radiusKm: null, kMS: 1.39 },
     },
   ],
   belts: [],

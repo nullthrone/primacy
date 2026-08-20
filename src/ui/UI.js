@@ -78,6 +78,8 @@ export class UI {
           ${seg('set-trails', [['on', t('ui.on')], ['off', t('ui.off')]], app.system.trailsEnabled ? 'on' : 'off')}</div>
         <div class="setting-row"><span>${t('ui.hz')}</span>
           ${seg('set-hz', [['on', t('ui.on')], ['off', t('ui.off')]], app.hzVisible ? 'on' : 'off')}</div>
+        <div class="setting-row"><span>${t('ui.knowledge')}</span>
+          ${seg('set-knowledge', [['on', t('ui.on')], ['off', t('ui.off')]], app.knowledgeMode ? 'on' : 'off')}</div>
       </div>`;
     this.settingsRoot.hidden = false;
 
@@ -95,6 +97,7 @@ export class UI {
     wire('set-labels', (v) => { app.labels.enabled = v === 'on'; });
     wire('set-trails', (v) => app.system.setTrailsVisible(v === 'on'));
     wire('set-hz', (v) => app.setHZ(v === 'on'));
+    wire('set-knowledge', (v) => app.setKnowledge(v === 'on'));
     this.settingsRoot.querySelector('#settings-close').addEventListener('click', () => {
       this.settingsRoot.hidden = true;
     });

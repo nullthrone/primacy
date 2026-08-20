@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { earthVertex, earthFragment } from '../shaders/earth.glsl.js';
 import { atmosphereVertex, atmosphereFragment } from '../shaders/atmosphere.glsl.js';
 import { eyeballVertex, eyeballFragment } from '../shaders/eyeball.glsl.js';
+import { auroraVertex, auroraFragment } from '../shaders/aurora.glsl.js';
 import { proceduralTexture } from '../procgen/ProceduralTextures.js';
 import { RingSystem } from '../bodies/RingSystem.js';
 
@@ -181,6 +182,33 @@ export class Materials {
         mesh,
         onRadius: (r) => mesh.scale.setScalar(r * p.scale),
         setSun: (dir) => uniforms.uSunDir.value.copy(dir),
+        dispose: () => { mesh.geometry.dispose(); mesh.material.dispose(); },
+      });
+    }
+
+    if (def.material?.aurora) {
+      const uniforms = {
+        uTime: { value: 0 },
+        uResponse: { value: 0 },
+      };
+      const mesh = new THREE.Mesh(
+        new THREE.SphereGeometry(1, 48, 24),
+        new THREE.ShaderMaterial({
+          vertexShader: auroraVertex,
+          fragmentShader: auroraFragment,
+          uniforms,
+          transparent: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        })
+      );
+      extras.push({
+        attach: 'tilt',
+        isAurora: true,
+        mesh,
+        onRadius: (r) => mesh.scale.setScalar(r * 1.045),
+        setResponse: (v) => { uniforms.uResponse.value = v; },
+        update: (dt) => { uniforms.uTime.value += dt; },
         dispose: () => { mesh.geometry.dispose(); mesh.material.dispose(); },
       });
     }

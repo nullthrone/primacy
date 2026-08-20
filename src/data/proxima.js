@@ -37,7 +37,7 @@ export const proxima = {
       },
       material: { kind: 'eyeball', eyeball: { type: 'hot', seed: 41 }, atmosphere: null, fallback: 'rock', tint: 0xb87a5a },
       trail: true, labelRank: 3, i18n: 'body.proximaD',
-      knowledge: { certainty: 'msini', mSinI: 0.26, radiusKm: null },
+      knowledge: { certainty: 'msini', mSinI: 0.26, radiusKm: null, kMS: 0.39 },
     },
     {
       id: 'proxima-b', type: 'planet', parent: 'proxima-star',
@@ -48,12 +48,12 @@ export const proxima = {
         discovery: { year: 2016, method: 'RV (HARPS)' },
       },
       material: {
-        kind: 'eyeball', eyeball: { type: 'temperate', seed: 17 },
+        kind: 'eyeball', eyeball: { type: 'temperate', seed: 17 }, aurora: true,
         atmosphere: { kind: 'rim', color: 0x7ab8d8, strength: 0.85 },
         fallback: 'terra', tint: 0x5888b8,
       },
       trail: true, labelRank: 1, i18n: 'body.proximaB',
-      knowledge: { certainty: 'msini', mSinI: 1.07, radiusKm: null },
+      knowledge: { certainty: 'msini', mSinI: 1.07, radiusKm: null, kMS: 1.38 },
     },
     {
       id: 'proxima-c', type: 'planet', parent: 'proxima-star',
@@ -69,7 +69,7 @@ export const proxima = {
         fallback: 'icegiant-uranus', tint: 0x9ab4c8,
       },
       trail: true, labelRank: 2, i18n: 'body.proximaC',
-      knowledge: { certainty: 'candidate', mSinI: 5.8, radiusKm: null },
+      knowledge: { certainty: 'candidate', mSinI: 5.8, radiusKm: null, kMS: 1.2 },
     },
   ],
   belts: [],

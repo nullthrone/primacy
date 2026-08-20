@@ -6,9 +6,11 @@ import { t, fmt } from './i18n.js';
  * language change.
  */
 export class InfoPanel {
-  constructor(root, { onClose }) {
+  constructor(root, { onClose, onAction = null, knowledgeActive = () => false }) {
     this.root = root;
     this.ctl = null;
+    this.onAction = onAction;
+    this.knowledgeActive = knowledgeActive;
     root.innerHTML = `
       <div class="panel-head">
         <div>
@@ -19,6 +21,7 @@ export class InfoPanel {
       </div>
       <div class="panel-scroll">
         <p class="panel-desc"></p>
+        <div class="panel-actions"></div>
         <dl class="facts"></dl>
       </div>
     `;
@@ -26,6 +29,7 @@ export class InfoPanel {
     this.titleEl = root.querySelector('.panel-title');
     this.chipsEl = root.querySelector('.panel-chips');
     this.descEl = root.querySelector('.panel-desc');
+    this.actionsEl = root.querySelector('.panel-actions');
     this.factsEl = root.querySelector('.facts');
   }
 
@@ -50,6 +54,11 @@ export class InfoPanel {
     const chips = [];
     const typeKey = def.star ? 'type.star' : `type.${def.type}`;
     chips.push(`<span class="chip">${t(typeKey)}</span>`);
+    if (def.star) {
+      chips.push(def.star.flareStar
+        ? `<span class="chip warn">${t('ui.flareStar')}</span>`
+        : `<span class="chip ok">${t('ui.quietStar')}</span>`);
+    }
     if (def.knowledge?.certainty === 'msini') {
       chips.push(`<span class="chip warn">${t('ui.artistImpression')}</span>`);
     }
@@ -59,6 +68,23 @@ export class InfoPanel {
     this.chipsEl.innerHTML = chips.join('');
 
     this.descEl.textContent = t(`${key}.desc`);
+
+    // Contextual actions.
+    const actions = [];
+    if (def.star?.flareStar) {
+      actions.push(`<button type="button" class="action-btn" data-act="flare">☀ ${t('ui.triggerFlare')}</button>`);
+    }
+    const isRV = def.knowledge?.certainty === 'msini' || def.knowledge?.certainty === 'candidate';
+    if (isRV) {
+      actions.push(`<button type="button" class="action-btn" data-act="rv">〜 ${t('ui.rvBtn')}</button>`);
+      actions.push(`<button type="button" class="action-btn ${this.knowledgeActive() ? 'active' : ''}" data-act="knowledge">☰ ${t('ui.knowledge')}</button>`);
+    }
+    this.actionsEl.innerHTML = actions.join('');
+    for (const b of this.actionsEl.querySelectorAll('.action-btn')) {
+      b.addEventListener('click', () => this.onAction?.(b.dataset.act, ctl));
+    }
+
+    const honest = this.knowledgeActive() && isRV;
 
     const p = def.physical ?? {};
     const rows = [];
@@ -72,28 +98,28 @@ export class InfoPanel {
       if (def.star.luminositySun != null) add('fact.luminosity', `${fmt(def.star.luminositySun, 4)} L☉`);
       if (p.massE) add('fact.mass', `${fmt(p.massE / 333000, 3)} ${t('fact.solarMasses')}`);
     }
-    if (p.radiusKm) add('fact.radius', `${fmt(p.radiusKm)} km`);
+    if (p.radiusKm && !honest) add('fact.radius', `${fmt(p.radiusKm)} km`);
     if (!def.star && p.massE != null && def.knowledge?.certainty !== 'msini') {
       add('fact.mass', `${fmt(p.massE, p.massE < 0.01 ? 4 : 2)} ${t('fact.earthMasses')}`);
     }
     if (def.knowledge?.certainty === 'msini' && def.knowledge.mSinI != null) {
       add('fact.msini', `${fmt(def.knowledge.mSinI, 2)} ${t('fact.earthMasses')}`);
     }
-    if (p.rotationH != null) {
+    if (p.rotationH != null && !honest) {
       const h = Math.abs(p.rotationH);
       const label = h > 96 ? `${fmt(h / 24, 1)} ${t('fact.days')}` : `${fmt(h, 1)} ${t('fact.hours')}`;
       add('fact.rotation', p.rotationH < 0 ? `${label} (${t('fact.retrograde')})` : label);
     }
-    if (p.tidallyLocked) add('fact.tidallyLocked', t('fact.yes'));
-    if (p.obliquityDeg != null && !def.star) add('fact.obliquity', `${fmt(p.obliquityDeg, 1)}°`);
-    if (p.tempK) {
+    if (p.tidallyLocked && !honest) add('fact.tidallyLocked', t('fact.yes'));
+    if (p.obliquityDeg != null && !def.star && !honest) add('fact.obliquity', `${fmt(p.obliquityDeg, 1)}°`);
+    if (p.tempK && !honest) {
       const tK = p.tempK;
       const c = (k) => `${fmt(k - 273.15)} °C`;
       add('fact.temp', tK.min != null && tK.max != null
         ? `${c(tK.min)} … ${c(tK.max)}`
         : c(tK.mean));
     }
-    if (p.gravity) add('fact.gravity', `${fmt(p.gravity, 2)} m/s²`);
+    if (p.gravity && !honest) add('fact.gravity', `${fmt(p.gravity, 2)} m/s²`);
     if (def.elements) {
       const el = def.elements;
       const periodD = el.periodD;

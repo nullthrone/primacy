@@ -11,6 +11,8 @@ import { LabelManager } from './ui/LabelManager.js';
 import { SYSTEM_DEFS, VIEW_ORDER, loadStarCatalog } from './data/systems.js';
 import { InterstellarScene } from './scenes/InterstellarScene.js';
 import { WarpTransition } from './scenes/WarpTransition.js';
+import { FlareController } from './sim/FlareController.js';
+import { RVDemo } from './sim/RVDemo.js';
 import { t, onLang } from './ui/i18n.js';
 import { UI } from './ui/UI.js';
 import { InfoPanel } from './ui/InfoPanel.js';
@@ -83,6 +85,33 @@ async function boot() {
   const flare = new FlareOverlay(engine);
   const warp = new WarpTransition(engine);
 
+  const toastEl = document.getElementById('toast');
+  let toastTimer = null;
+  const toast = (text) => {
+    toastEl.textContent = text;
+    toastEl.hidden = false;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 6000);
+  };
+
+  // Flare simulation for flare-star systems, created on first visit.
+  const ensureFlareSim = (entry) => {
+    if (entry.flareSim !== undefined) return;
+    const def = entry.scene.def;
+    if (def.star?.star?.flareStar) {
+      const target = def.bodies.find((b) => b.material?.aurora);
+      entry.flareSim = new FlareController({
+        scene: entry.scene,
+        starCtl: entry.scene.star,
+        targetCtl: target ? entry.scene.controllers.get(target.id) : null,
+        onCaption: () => toast(t('ui.cmeCaption')),
+      });
+    } else {
+      entry.flareSim = null;
+    }
+  };
+
   // ---------- App state / debug API ----------
   const _pos = new THREE.Vector3();
   const selectListeners = new Set();
@@ -114,6 +143,7 @@ async function boot() {
         app.selected = null;
         rig.stop();
         const entry = router.switchTo(id);
+        ensureFlareSim(entry);
         entry.scene.setHZVisible(app.hzVisible);
         if (position && OVERVIEW[id]) {
           engine.camera.position.copy(OVERVIEW[id].pos);
@@ -153,6 +183,17 @@ async function boot() {
       app.hzVisible = v;
       for (const e of router.entries.values()) e.scene.setHZVisible(v);
     },
+    knowledgeMode: false,
+    setKnowledge: (v) => {
+      app.knowledgeMode = v;
+      for (const e of router.entries.values()) {
+        for (const ctl of e.scene.controllers?.values() ?? []) {
+          ctl.body?.setKnowledgeMode?.(v);
+        }
+      }
+    },
+    triggerFlare: () => router.active?.flareSim?.trigger() ?? false,
+    isFlaring: () => router.active?.flareSim?.flaring ?? false,
     applyQuality: (tier) => {
       app.qualityTier = tier;
       const dpr = window.devicePixelRatio || 1;
@@ -209,6 +250,7 @@ async function boot() {
 
   // Boot into Sol.
   router.switchTo('sol');
+  ensureFlareSim(router.active);
   engine.camera.position.copy(OVERVIEW.sol.pos);
   rig.controls.target.copy(OVERVIEW.sol.target);
   router.active.scene.setHZVisible(app.hzVisible);
@@ -220,8 +262,25 @@ async function boot() {
     systems: VIEW_ORDER,
     onSystem: (id) => app.setSystem(id, { warp: id !== 'map' && router.activeId !== 'map' }),
   });
+  const rv = new RVDemo(document.getElementById('rv-panel'), { time });
   const infoPanel = new InfoPanel(document.getElementById('info-panel'), {
     onClose: () => app.deselect(),
+    knowledgeActive: () => app.knowledgeMode,
+    onAction: (act, ctl) => {
+      if (act === 'flare') {
+        app.triggerFlare();
+      } else if (act === 'rv') {
+        rv.show({
+          name: nameOf(ctl),
+          periodD: ctl.def.elements?.periodD ?? 10,
+          kMS: ctl.def.knowledge?.kMS ?? 1,
+          epoch: ctl.def.elements?.epoch ?? 2451545.0,
+        });
+      } else if (act === 'knowledge') {
+        app.setKnowledge(!app.knowledgeMode);
+        infoPanel.render();
+      }
+    },
   });
   const navTree = new NavTree(document.getElementById('nav-tree'), {
     onPick: (id) => app.select(id),
@@ -285,10 +344,12 @@ async function boot() {
     const active = router.active;
     if (!active) return;
     active.scene.update(dt);
+    active.flareSim?.update(dt);
     rig.update(dt);
     warp.update(dt);
     active.labels.update();
     timeControls.update();
+    rv.update();
     flare.track(active.scene.star?.worldPos ?? null);
   });
 

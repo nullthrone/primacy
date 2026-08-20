@@ -35,11 +35,50 @@ export class PlanetBody {
       if (!ex.mesh) continue;
       (ex.attach === 'group' ? this.group : this.tilt).add(ex.mesh);
     }
+
+    // Honest-data mode support for bodies that are only RV detections:
+    // a neutral sphere plus a dashed uncertainty ring.
+    const cert = def.knowledge?.certainty;
+    if (cert === 'msini' || cert === 'candidate') {
+      const pts = [];
+      for (let i = 0; i <= 96; i++) {
+        const a = (i / 96) * Math.PI * 2;
+        pts.push(new THREE.Vector3(Math.cos(a) * 1.5, 0, Math.sin(a) * 1.5));
+      }
+      const g = new THREE.BufferGeometry().setFromPoints(pts);
+      this.uncRing = new THREE.Line(g, new THREE.LineDashedMaterial({
+        color: 0x9aa8ba,
+        dashSize: 0.18,
+        gapSize: 0.12,
+        transparent: true,
+        opacity: 0.7,
+      }));
+      this.uncRing.computeLineDistances();
+      this.uncRing.visible = false;
+      this.group.add(this.uncRing);
+      this._neutralMat = new THREE.MeshStandardMaterial({
+        color: 0x929aa6,
+        roughness: 1,
+        metalness: 0,
+      });
+    }
+    this.knowledgeMode = false;
+  }
+
+  setKnowledgeMode(v) {
+    if (!this._neutralMat) return;
+    this.knowledgeMode = v;
+    this.mesh.material = v ? this._neutralMat : this.material;
+    if (this.uncRing) this.uncRing.visible = v;
+    for (const ex of this.extras) {
+      if (ex.mesh) ex.mesh.visible = !v;
+    }
   }
 
   setRadius(r) {
     this.mesh.scale.setScalar(r);
     for (const ex of this.extras) ex.onRadius?.(r);
+    if (this.uncRing) this.uncRing.scale.setScalar(r);
   }
 
   get displayRadius() {
