@@ -1,0 +1,15 @@
+{
+  "name": "primacy",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Interactive 3D encyclopedia of the Sol, Proxima Centauri and Ross 128 star systems",
+  "type": "module",
+  "scripts": {
+    "vendor": "node tools/vendor-three.mjs",
+    "fetch-textures": "node tools/fetch-textures.mjs",
+    "fetch-stars": "node tools/fetch-stars.mjs",
+    "serve": "python3 -m http.server 8734",
+    "verify": "node tools/verify/run-all.mjs"
+  },
+  "license": "MIT"
+}

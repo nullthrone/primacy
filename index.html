@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Primacy — 3D-Enzyklopädie dreier Sternensysteme</title>
+  <meta name="description" content="Interaktive 3D-Enzyklopädie der Sternensysteme Sol, Proxima Centauri und Ross 128 — Bahnmechanik, Sternphysik und Exoplaneten im Browser.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='14' fill='%23ffcf7d'/%3E%3Ccircle cx='32' cy='32' r='26' fill='none' stroke='%236ac8ff' stroke-width='2.5' opacity='.85'/%3E%3Ccircle cx='55' cy='24' r='4' fill='%236ac8ff'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/three.module.js",
+      "three/addons/": "./vendor/three/addons/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="scene" aria-label="3D-Ansicht des Sternensystems"></canvas>
+
+  <div id="loading" role="status">
+    <div class="loading-inner">
+      <div class="loading-orbit"><span class="loading-planet"></span></div>
+      <div class="loading-title">PRIMACY</div>
+      <div class="loading-sub" data-i18n="loading.sub">Sternensysteme werden geladen …</div>
+      <div class="loading-bar"><div id="loading-progress"></div></div>
+    </div>
+  </div>
+
+  <div id="fatal" hidden>
+    <div class="fatal-card">
+      <h1>Primacy</h1>
+      <p lang="de">Dein Browser unterstützt kein WebGL&nbsp;2 — die 3D-Ansicht kann nicht gestartet werden. Bitte verwende einen aktuellen Chrome, Firefox, Edge oder Safari.</p>
+      <p lang="en">Your browser does not support WebGL&nbsp;2, so the 3D view cannot start. Please use a recent version of Chrome, Firefox, Edge or Safari.</p>
+    </div>
+  </div>
+
+  <div id="ui" hidden></div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

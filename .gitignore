@@ -1,0 +1,5 @@
+node_modules/
+.vendor-work/
+tools/verify/out/
+*.log
+.DS_Store
