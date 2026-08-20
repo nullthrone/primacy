@@ -63,14 +63,14 @@ export function makeStreakTexture(tint = '160,205,255', size = 256) {
     const half = s / 2;
     const grad = ctx.createLinearGradient(0, half, s, half);
     grad.addColorStop(0, `rgba(${tint},0)`);
-    grad.addColorStop(0.5, `rgba(${tint},0.85)`);
+    grad.addColorStop(0.5, `rgba(${tint},0.45)`);
     grad.addColorStop(1, `rgba(${tint},0)`);
     ctx.fillStyle = grad;
-    const h = s * 0.045;
+    const h = s * 0.03;
     ctx.fillRect(0, half - h / 2, s, h);
     const soft = ctx.createLinearGradient(0, half, s, half);
     soft.addColorStop(0, `rgba(${tint},0)`);
-    soft.addColorStop(0.5, `rgba(${tint},0.25)`);
+    soft.addColorStop(0.5, `rgba(${tint},0.10)`);
     soft.addColorStop(1, `rgba(${tint},0)`);
     ctx.fillStyle = soft;
     ctx.fillRect(0, half - h * 2.4, s, h * 4.8);
