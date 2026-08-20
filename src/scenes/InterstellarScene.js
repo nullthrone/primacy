@@ -154,6 +154,25 @@ export class InterstellarScene {
         _pulse: { glow, ring, phase: Math.random() * Math.PI * 2 },
       });
     }
+    // Breakthrough Starshot concept line Sol -> Proxima with a 0.2c pulse.
+    const solPos = this.controllers.get('sol').worldPos;
+    const proxPos = this.controllers.get('proxima').worldPos;
+    const shotLine = new THREE.Line(
+      new THREE.BufferGeometry().setFromPoints([solPos.clone(), proxPos.clone()]),
+      new THREE.LineDashedMaterial({ color: 0x6ac8ff, dashSize: 3, gapSize: 2.4, transparent: true, opacity: 0.55 })
+    );
+    shotLine.computeLineDistances();
+    this.scene.add(shotLine);
+    this.pulse = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: makeDotTexture('140,210,255'),
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    }));
+    this.pulse.scale.setScalar(5);
+    this.scene.add(this.pulse);
+    this._shotEnds = [solPos.clone(), proxPos.clone()];
+
     this._t = 0;
   }
 
@@ -164,6 +183,10 @@ export class InterstellarScene {
       ctl._pulse.glow.scale.setScalar(16 * s);
       ctl._pulse.ring.rotation.z = this._t * 0.4 + ctl._pulse.phase;
     }
+    // Starshot pulse: one Sol->Proxima run every ~9 s (21.7 years at 0.2c).
+    const f = (this._t % 9) / 9;
+    this.pulse.position.lerpVectors(this._shotEnds[0], this._shotEnds[1], f);
+    this.pulse.material.opacity = Math.sin(f * Math.PI) * 0.9;
   }
 
   worldPosOf(id, target = new THREE.Vector3()) {

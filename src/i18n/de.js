@@ -76,6 +76,32 @@ export const de = {
   'fact.solarMasses': 'Sonnenmassen',
   'fact.retrograde': 'retrograd',
 
+  'ui.probes': 'Sonden-Trajektorien',
+  'ui.tourStep': 'Schritt',
+  'ui.tourExit': 'Tour beenden',
+  'ui.photoHint': 'Foto-Modus — P oder Esc beendet ihn',
+  'ui.photoSave': 'Bild speichern',
+
+  // --- Tours ---
+  'tour.grand.title': 'Grand Tour: Sonnensystem',
+  'tour.grand.s0': 'Willkommen an Bord. Unsere Reise beginnt am Zentralgestirn: Die Sonne vereint 99,86 % der Masse des Systems — alles andere ist Krümel in ihrem Schwerefeld.',
+  'tour.grand.s1': 'Die Erde, der blaue Marmor. Beachte den weichen Terminator zwischen Tag und Nacht — und die Stadtlichter, die nachts die Küstenlinien nachzeichnen.',
+  'tour.grand.s2': 'Jupiter mit seinen vier großen Monden — ein Sonnensystem im Kleinen. Io, Europa, Ganymed und Kallisto sind Welten für sich, von Vulkanschwefel bis Eisozean.',
+  'tour.grand.s3': 'Saturn. Seine Ringe bestehen aus Milliarden Eisbrocken und sind stellenweise nur zehn Meter dick. Achte auf den Schatten, den der Planet auf die Ringe wirft.',
+  'tour.grand.s4': 'Am Rand des Systems: Neptun, errechnet bevor er gesehen wurde, und dahinter der Kuipergürtel mit Pluto. Das Sonnenlicht ist hier tausendmal schwächer als auf der Erde.',
+  'tour.grand.s5': 'Und ein Wanderer: der Halleysche Komet. Seine rückläufige Bahn bringt ihn alle 75 Jahre zurück — beim Sonnennähe-Durchgang entfalten sich seine zwei Schweife.',
+  'tour.proxday.title': 'Ein Tag auf Proxima b',
+  'tour.proxday.s0': 'Proxima Centauri: der sonnennächste Stern. Anderthalb Jupiterdurchmesser klein, 0,17 % der Sonnenleuchtkraft — und trotzdem gefährlich: ein Flare-Stern.',
+  'tour.proxday.s1': 'Proxima b, der nächste Exoplanet überhaupt. „Ein Tag" ist hier bedeutungslos: Der Planet rotiert gebunden — eine Seite ewiger Tag, die andere ewige Nacht.',
+  'tour.proxday.s2': 'Das Dämmerband dazwischen wäre die bewohnbare Zone: ein ewiger Sonnenuntergang, in dem die Temperatur gemäßigt bleibt. Ozean-Auge und Eis-Nachtseite sind Spekulation — gekennzeichnete künstlerische Interpretation.',
+  'tour.proxday.s3': 'Und dann das: ein Flare. Der Stern verdoppelt binnen Minuten seine Helligkeit und schleudert Plasma Richtung Planet. Ohne Magnetfeld und dichte Atmosphäre wird Leben hier schwierig.',
+  'tour.proxday.s4': 'Weiter draußen zieht der unbestätigte Kandidat Proxima c seine 5,3-Jahres-Bahn durch die Eiseskälte. Die Suche geht weiter.',
+  'tour.ross.title': 'Das Ross-128-Signal',
+  'tour.ross.s0': 'Ross 128, elf Lichtjahre entfernt. Im Mai 2017 fing das Arecibo-Teleskop hier ein seltsames Radiosignal auf — „Weird!" nannten es die Astronomen.',
+  'tour.ross.s1': 'Zehn Minuten quasi-periodischer Pulse, nicht wie ein Flare, nicht wie bekannte Störer. Für ein paar Wochen hielt die Welt den Atem an: außerirdische Technologie?',
+  'tour.ross.s2': 'Die Auflösung war irdischer: Interferenz geostationärer Satelliten, deren Frequenzband sich mit der Beobachtung überlagerte. Kein Alien — aber eine Lehrstunde in wissenschaftlicher Sorgfalt.',
+  'tour.ross.s3': 'Geblieben ist ein stiller, alter Zwergstern — und Ross 128 b: mindestens 1,4 Erdmassen, temperiert, um einen der ruhigsten roten Zwerge überhaupt. Einer der besten nahen Kandidaten für Bewohnbarkeit.',
+
   // --- Types ---
   'type.star': 'Stern',
   'type.planet': 'Planet',

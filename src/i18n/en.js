@@ -76,6 +76,32 @@ export const en = {
   'fact.solarMasses': 'solar masses',
   'fact.retrograde': 'retrograde',
 
+  'ui.probes': 'Probe trajectories',
+  'ui.tourStep': 'Step',
+  'ui.tourExit': 'End tour',
+  'ui.photoHint': 'Photo mode — press P or Esc to exit',
+  'ui.photoSave': 'Save image',
+
+  // --- Tours ---
+  'tour.grand.title': 'Grand Tour: Solar System',
+  'tour.grand.s0': 'Welcome aboard. Our journey starts at the central star: the Sun holds 99.86% of the system’s mass — everything else is crumbs in its gravity well.',
+  'tour.grand.s1': 'Earth, the blue marble. Note the soft terminator between day and night — and the city lights tracing coastlines after dark.',
+  'tour.grand.s2': 'Jupiter with its four great moons — a solar system in miniature. Io, Europa, Ganymede and Callisto are worlds of their own, from volcanic sulfur to buried oceans.',
+  'tour.grand.s3': 'Saturn. Its rings are billions of ice chunks, locally just ten metres thick. Watch the shadow the planet casts across them.',
+  'tour.grand.s4': 'At the system’s edge: Neptune, calculated into existence before it was seen, and beyond it the Kuiper belt with Pluto. Sunlight out here is a thousand times weaker than on Earth.',
+  'tour.grand.s5': 'And a wanderer: Halley’s Comet. Its retrograde orbit brings it back every 75 years — near perihelion its two tails unfurl.',
+  'tour.proxday.title': 'A Day on Proxima b',
+  'tour.proxday.s0': 'Proxima Centauri: the Sun’s nearest neighbour. One and a half Jupiter diameters small, 0.17% of the Sun’s luminosity — and dangerous nonetheless: a flare star.',
+  'tour.proxday.s1': 'Proxima b, the closest exoplanet of all. “A day” means nothing here: the planet is tidally locked — one side eternal day, the other eternal night.',
+  'tour.proxday.s2': 'The twilight band between them would be the habitable strip: a perpetual sunset where temperatures stay mild. Ocean eye and icy night side are speculation — labeled artistic interpretation.',
+  'tour.proxday.s3': 'And then this: a flare. Within minutes the star doubles in brightness and hurls plasma toward the planet. Without a magnetic field and thick atmosphere, life here gets difficult.',
+  'tour.proxday.s4': 'Further out, unconfirmed candidate Proxima c drags its 5.3-year orbit through the deep freeze. The search continues.',
+  'tour.ross.title': 'The Ross 128 Signal',
+  'tour.ross.s0': 'Ross 128, eleven light-years away. In May 2017 the Arecibo telescope caught a strange radio signal from here — astronomers dubbed it “Weird!”.',
+  'tour.ross.s1': 'Ten minutes of quasi-periodic pulses, unlike a flare, unlike known interference. For a few weeks the world held its breath: alien technology?',
+  'tour.ross.s2': 'The resolution was earthly: interference from geostationary satellites whose band overlapped the observation. No aliens — but a lesson in scientific care.',
+  'tour.ross.s3': 'What remains is a quiet, old dwarf star — and Ross 128 b: at least 1.4 Earth masses, temperate, around one of the calmest red dwarfs known. One of the best nearby candidates for habitability.',
+
   // --- Types ---
   'type.star': 'Star',
   'type.planet': 'Planet',

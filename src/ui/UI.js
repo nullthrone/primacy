@@ -5,11 +5,15 @@ import { t, lang, setLang } from './i18n.js';
  * glue that re-renders all UI pieces on language change.
  */
 export class UI {
-  constructor(app, { onOverview, systems = [], onSystem }) {
+  constructor(app, { onOverview, systems = [], onSystem, tours = [], onTour, onCompare, onPhoto }) {
     this.app = app;
     this.onOverview = onOverview;
     this.systems = systems;
     this.onSystem = onSystem;
+    this.tours = tours;
+    this.onTour = onTour;
+    this.onCompare = onCompare;
+    this.onPhoto = onPhoto;
 
     this.topbar = document.getElementById('topbar');
     this.breadcrumbs = document.getElementById('breadcrumbs');
@@ -17,11 +21,40 @@ export class UI {
     this.langBtn = document.getElementById('btn-lang');
     this.settingsBtn = document.getElementById('btn-settings');
     this.settingsRoot = document.getElementById('settings');
+    this.toursBtn = document.getElementById('btn-tours');
+    this.toursMenu = document.getElementById('tours-menu');
+    this.compareBtn = document.getElementById('btn-compare');
+    this.photoBtn = document.getElementById('btn-photo');
 
     this.langBtn.addEventListener('click', () => setLang(lang() === 'de' ? 'en' : 'de'));
     this.settingsBtn.addEventListener('click', () => this.openSettings());
+    this.toursBtn.addEventListener('click', () => this.toggleToursMenu());
+    this.compareBtn.addEventListener('click', () => this.onCompare?.());
+    this.photoBtn.addEventListener('click', () => this.onPhoto?.());
+    document.addEventListener('pointerdown', (e) => {
+      if (!this.toursMenu.hidden && !this.toursMenu.contains(e.target) && e.target !== this.toursBtn) {
+        this.toursMenu.hidden = true;
+      }
+    });
 
     this.renderStatics();
+  }
+
+  toggleToursMenu() {
+    if (!this.toursMenu.hidden) {
+      this.toursMenu.hidden = true;
+      return;
+    }
+    this.toursMenu.innerHTML = this.tours
+      .map((id) => `<button type="button" data-id="${id}">${t(`tour.${id}.title`)}</button>`)
+      .join('');
+    for (const b of this.toursMenu.querySelectorAll('button')) {
+      b.addEventListener('click', () => {
+        this.toursMenu.hidden = true;
+        this.onTour?.(b.dataset.id);
+      });
+    }
+    this.toursMenu.hidden = false;
   }
 
   setActiveSystem(id) {
@@ -35,6 +68,9 @@ export class UI {
   renderStatics() {
     this.langBtn.textContent = lang() === 'de' ? 'EN' : 'DE';
     this.settingsBtn.title = t('ui.settings');
+    this.toursBtn.title = t('ui.tours');
+    this.compareBtn.title = t('ui.compare');
+    this.photoBtn.title = t('ui.photo');
   }
 
   setBreadcrumbs(systemLabelKey, ctl) {
@@ -80,6 +116,8 @@ export class UI {
           ${seg('set-hz', [['on', t('ui.on')], ['off', t('ui.off')]], app.hzVisible ? 'on' : 'off')}</div>
         <div class="setting-row"><span>${t('ui.knowledge')}</span>
           ${seg('set-knowledge', [['on', t('ui.on')], ['off', t('ui.off')]], app.knowledgeMode ? 'on' : 'off')}</div>
+        <div class="setting-row"><span>${t('ui.probes')}</span>
+          ${seg('set-probes', [['on', t('ui.on')], ['off', t('ui.off')]], app.probesVisible ? 'on' : 'off')}</div>
       </div>`;
     this.settingsRoot.hidden = false;
 
@@ -98,6 +136,7 @@ export class UI {
     wire('set-trails', (v) => app.system.setTrailsVisible(v === 'on'));
     wire('set-hz', (v) => app.setHZ(v === 'on'));
     wire('set-knowledge', (v) => app.setKnowledge(v === 'on'));
+    wire('set-probes', (v) => app.setProbes(v === 'on'));
     this.settingsRoot.querySelector('#settings-close').addEventListener('click', () => {
       this.settingsRoot.hidden = true;
     });

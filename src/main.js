@@ -13,6 +13,11 @@ import { InterstellarScene } from './scenes/InterstellarScene.js';
 import { WarpTransition } from './scenes/WarpTransition.js';
 import { FlareController } from './sim/FlareController.js';
 import { RVDemo } from './sim/RVDemo.js';
+import { TourPlayer } from './ui/TourPlayer.js';
+import { ComparePanel } from './ui/ComparePanel.js';
+import { PhotoMode } from './ui/PhotoMode.js';
+import { Trajectories } from './orbits/Trajectories.js';
+import { TOURS } from './data/tours.js';
 import { t, onLang } from './ui/i18n.js';
 import { UI } from './ui/UI.js';
 import { InfoPanel } from './ui/InfoPanel.js';
@@ -110,6 +115,11 @@ async function boot() {
     } else {
       entry.flareSim = null;
     }
+    // Probe trajectories exist only in Sol.
+    if (entry.id === 'sol' && !entry.traj) {
+      entry.traj = new Trajectories(entry.scene.def, scale);
+      entry.scene.scene.add(entry.traj.group);
+    }
   };
 
   // ---------- App state / debug API ----------
@@ -194,6 +204,11 @@ async function boot() {
     },
     triggerFlare: () => router.active?.flareSim?.trigger() ?? false,
     isFlaring: () => router.active?.flareSim?.flaring ?? false,
+    probesVisible: true,
+    setProbes: (v) => {
+      app.probesVisible = v;
+      for (const e of router.entries.values()) e.traj?.setVisible(v);
+    },
     applyQuality: (tier) => {
       app.qualityTier = tier;
       const dpr = window.devicePixelRatio || 1;
@@ -257,10 +272,17 @@ async function boot() {
 
   // ---------- UI ----------
   document.getElementById('ui').hidden = false;
+  const tourPlayer = new TourPlayer(document.getElementById('tour-card'), app);
+  const comparePanel = new ComparePanel(engine, materials, document.getElementById('compare-labels'));
+  const photoMode = new PhotoMode(engine, document.getElementById('photo-hint'));
   const ui = new UI(app, {
     onOverview: () => app.overview(),
     systems: VIEW_ORDER,
     onSystem: (id) => app.setSystem(id, { warp: id !== 'map' && router.activeId !== 'map' }),
+    tours: TOURS.map((x) => x.id),
+    onTour: (id) => tourPlayer.start(id),
+    onCompare: () => comparePanel.toggle(),
+    onPhoto: () => photoMode.toggle(),
   });
   const rv = new RVDemo(document.getElementById('rv-panel'), { time });
   const infoPanel = new InfoPanel(document.getElementById('info-panel'), {
@@ -327,7 +349,10 @@ async function boot() {
     if (e.target instanceof HTMLInputElement) return;
     if (e.key === 'Escape') {
       const settings = document.getElementById('settings');
-      if (!settings.hidden) settings.hidden = true;
+      if (photoMode.active) photoMode.exit();
+      else if (comparePanel.enabled) comparePanel.hide();
+      else if (tourPlayer.running) tourPlayer.stop();
+      else if (!settings.hidden) settings.hidden = true;
       else if (app.selected) app.deselect();
       else app.overview();
     }
@@ -335,6 +360,9 @@ async function boot() {
       e.preventDefault();
       time.setPaused(!time.paused);
       timeControls.refreshStatics();
+    }
+    if (e.key === 'p' || e.key === 'P') {
+      photoMode.toggle();
     }
   });
 
@@ -345,8 +373,10 @@ async function boot() {
     if (!active) return;
     active.scene.update(dt);
     active.flareSim?.update(dt);
+    if (scale.transitioning) active.traj?.rebuild();
     rig.update(dt);
     warp.update(dt);
+    tourPlayer.update(dt);
     active.labels.update();
     timeControls.update();
     rv.update();

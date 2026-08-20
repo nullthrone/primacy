@@ -43,17 +43,24 @@
       <nav id="breadcrumbs" aria-label="breadcrumbs"></nav>
       <div id="system-switch" class="seg"></div>
       <div class="top-actions">
+        <button id="btn-tours" class="icon-btn" type="button" aria-label="tours">▶</button>
+        <button id="btn-compare" class="icon-btn" type="button" aria-label="compare">⚖</button>
+        <button id="btn-photo" class="icon-btn" type="button" aria-label="photo">📷</button>
         <button id="btn-lang" class="pill-btn" type="button">EN</button>
         <button id="btn-settings" class="icon-btn" type="button" aria-label="settings">⚙</button>
       </div>
+      <div id="tours-menu" class="popover" hidden></div>
     </header>
     <aside id="nav-tree"></aside>
     <aside id="info-panel" hidden></aside>
     <footer id="time-bar"></footer>
     <div id="rv-panel" class="rv-card" hidden></div>
+    <div id="tour-card" hidden></div>
     <div id="toast" hidden></div>
     <div id="settings" class="modal" hidden></div>
   </div>
+  <div id="compare-labels" hidden></div>
+  <div id="photo-hint" hidden></div>
 
   <script type="module" src="src/main.js"></script>
 </body>
