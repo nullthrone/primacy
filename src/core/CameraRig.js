@@ -53,6 +53,21 @@ export class CameraRig {
     this.controls.enabled = false;
   }
 
+  /** Tween to a fixed pose (used for the system overview). */
+  flyToPose(position, target, duration = 1.8) {
+    const start = this.camera.position.clone();
+    const startTarget = this.controls.target.clone();
+    this.followCtl = null;
+    this.flight = {
+      pose: { position: position.clone(), target: target.clone() },
+      t: 0,
+      duration,
+      startPos: start,
+      startTarget,
+    };
+    this.controls.enabled = false;
+  }
+
   follow(ctl) {
     this.followCtl = ctl;
     if (ctl) {
@@ -81,16 +96,25 @@ export class CameraRig {
       const f = this.flight;
       f.t = Math.min(1, f.t + dt / f.duration);
       const e = easeInOut(f.t);
-      const targetPos = f.ctl.worldPos;
-      _end.copy(f.dir).multiplyScalar(f.dist).add(targetPos);
-      this.camera.position.lerpVectors(f.startPos, _end, e);
-      this.controls.target.lerpVectors(f.startTarget, targetPos, Math.min(1, e * 1.5));
-      if (f.t >= 1) {
-        this.controls.enabled = true;
-        this.follow(f.ctl);
-        const done = f.onArrive;
-        this.flight = null;
-        done?.();
+      if (f.pose) {
+        this.camera.position.lerpVectors(f.startPos, f.pose.position, e);
+        this.controls.target.lerpVectors(f.startTarget, f.pose.target, e);
+        if (f.t >= 1) {
+          this.controls.enabled = true;
+          this.flight = null;
+        }
+      } else {
+        const targetPos = f.ctl.worldPos;
+        _end.copy(f.dir).multiplyScalar(f.dist).add(targetPos);
+        this.camera.position.lerpVectors(f.startPos, _end, e);
+        this.controls.target.lerpVectors(f.startTarget, targetPos, Math.min(1, e * 1.5));
+        if (f.t >= 1) {
+          this.controls.enabled = true;
+          this.follow(f.ctl);
+          const done = f.onArrive;
+          this.flight = null;
+          done?.();
+        }
       }
     } else if (this.followCtl) {
       // Carry the camera along with the body, keep the user's offset.

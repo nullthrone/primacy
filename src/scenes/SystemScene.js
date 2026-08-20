@@ -48,6 +48,14 @@ export class SystemScene {
     this.scene.add(new THREE.AmbientLight(0x4a5a74, 0.10));
 
     this._trailsDirty = true;
+    this.trailsEnabled = true;
+  }
+
+  setTrailsVisible(v) {
+    this.trailsEnabled = v;
+    for (const ctl of this.controllers.values()) {
+      if (ctl.trail && !ctl.def.moonScale) ctl.trail.line.visible = v;
+    }
   }
 
   _depthOf(def) {
@@ -172,7 +180,7 @@ export class SystemScene {
       // parent — from system range they are visual noise.
       if (ctl.trail && ctl.def.moonScale && ctl.parent?.body?.displayRadius) {
         const camDist = this.engine.camera.position.distanceTo(ctl.parent.worldPos);
-        ctl.trail.line.visible = camDist < ctl.parent.body.displayRadius * 60;
+        ctl.trail.line.visible = this.trailsEnabled && camDist < ctl.parent.body.displayRadius * 60;
       }
       if (ctl.def.physical.tidallyLocked && el) {
         // Face the parent exactly: spin angle = true longitude + pi.

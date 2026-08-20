@@ -37,7 +37,20 @@
   </div>
 
   <div id="labels" aria-hidden="true"></div>
-  <div id="ui" hidden></div>
+  <div id="ui" hidden>
+    <header id="topbar">
+      <div class="brand">PRIMACY</div>
+      <nav id="breadcrumbs" aria-label="breadcrumbs"></nav>
+      <div class="top-actions">
+        <button id="btn-lang" class="pill-btn" type="button">EN</button>
+        <button id="btn-settings" class="icon-btn" type="button" aria-label="settings">⚙</button>
+      </div>
+    </header>
+    <aside id="nav-tree"></aside>
+    <aside id="info-panel" hidden></aside>
+    <footer id="time-bar"></footer>
+    <div id="settings" class="modal" hidden></div>
+  </div>
 
   <script type="module" src="src/main.js"></script>
 </body>
