@@ -6,6 +6,7 @@ import { BeltField } from '../bodies/BeltField.js';
 import { OrbitTrail } from '../orbits/OrbitTrail.js';
 import { keplerPosition, eccentricAnomalyAt, trueAnomalyAt } from '../orbits/Kepler.js';
 import { SkyDome } from './SkyDome.js';
+import { HZRings } from '../bodies/HZRings.js';
 import { KM_PER_AU } from '../core/ScaleManager.js';
 
 const _vAU = new THREE.Vector3();
@@ -45,10 +46,19 @@ export class SystemScene {
       return belt;
     });
 
+    if (def.hz) {
+      this.hzRings = new HZRings(def.hz);
+      this.scene.add(this.hzRings.group);
+    }
+
     this.scene.add(new THREE.AmbientLight(0x4a5a74, 0.10));
 
     this._trailsDirty = true;
     this.trailsEnabled = true;
+  }
+
+  setHZVisible(v) {
+    this.hzRings?.setVisible(v);
   }
 
   setTrailsVisible(v) {
@@ -75,6 +85,7 @@ export class SystemScene {
       teffK: starDef.star.teffK,
       activity: starDef.star.activity,
       seed: starDef.star.seed,
+      granScale: starDef.star.granScale ?? 22,
     });
     star.setRadius(this.scale.mapRadius(starDef.physical.radiusKm));
     this.scene.add(star.group);
@@ -183,14 +194,13 @@ export class SystemScene {
         ctl.trail.line.visible = this.trailsEnabled && camDist < ctl.parent.body.displayRadius * 60;
       }
       if (ctl.def.physical.tidallyLocked && el) {
-        // Face the parent exactly: spin angle = true longitude + pi.
+        // Face the parent exactly. With the ecliptic->scene mapping
+        // (x,y,z)_ecl -> (x,z,-y), a spin angle of true longitude + pi
+        // keeps the object-space +X axis pointed at the parent.
         const { nu } = trueAnomalyAt(el, jd);
-        const elNow = el;
-        // True longitude in the orbit plane approximated by nu + w + Om
-        // (good for the near-circular, low-inclination exo orbits).
         const DEG = Math.PI / 180;
-        const lon = nu + (elNow.w ?? 0) * DEG + (elNow.Om ?? 0) * DEG;
-        ctl.body.setSpinAngle(-lon + Math.PI);
+        const lon = nu + (el.w ?? 0) * DEG + (el.Om ?? 0) * DEG;
+        ctl.body.setSpinAngle(lon + Math.PI);
       } else {
         ctl.body.updateSpin(jd);
       }
@@ -209,6 +219,7 @@ export class SystemScene {
     }
 
     for (const belt of this.belts) belt.update(jd, this.scale.blend);
+    this.hzRings?.update(this.scale.blend);
 
     if (this._trailsDirty) {
       this._rebuildTrails(jd);

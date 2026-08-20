@@ -117,6 +117,24 @@ export const en = {
   'body.pluto.desc': 'The most famous dwarf planet stunned everyone during the 2015 New Horizons flyby: a young, geologically active world with nitrogen glaciers, water-ice mountains and the bright heart-shaped plain Sputnik Planitia. Its steeply inclined, eccentric orbit periodically crosses Neptune’s.',
   'body.ceres.name': 'Ceres',
   'body.ceres.desc': 'Ceres is the largest object in the asteroid belt and the inner Solar System’s only dwarf planet. The mysterious white spots in Occator crater turned out to be salt deposits — residue of briny water rising from below. Ceres may still harbour remnants of a subsurface ocean today.',
+  'fact.lyUnit': 'light-years',
+
+  // --- Bodies: Proxima Centauri ---
+  'body.proximaStar.name': 'Proxima Centauri',
+  'body.proximaStar.desc': 'The Sun’s nearest neighbour (4.24 light-years) is a red dwarf just one and a half Jupiter diameters across, shining with 0.17% of the Sun’s luminosity. It is a notorious flare star: magnetic eruptions multiply its brightness within minutes and strafe its planets with X-rays. As part of the Alpha Centauri triple system it orbits the bright pair α Cen A and B roughly every 550,000 years.',
+  'body.proximaB.name': 'Proxima Centauri b',
+  'body.proximaB.desc': 'The closest known exoplanet of all. With at least 1.07 Earth masses it circles its star every 11.2 days at just 0.049 AU — placing it squarely in the faint dwarf’s habitable zone. It is probably tidally locked: eternal day on one side, eternal night on the other. Its radius and atmosphere are unknown — this rendering is scientifically informed speculation.',
+  'body.proximaC.name': 'Proxima Centauri c',
+  'body.proximaC.desc': 'An unconfirmed candidate: radial-velocity and astrometric data hint at a super-Earth of at least 5.8 Earth masses at 1.5 AU with a 5.3-year period. Out there it receives almost no light — the equilibrium temperature sits near −234 °C. If real, it is a frozen world, possibly wrapped in a hydrogen envelope.',
+  'body.proximaD.name': 'Proxima Centauri d',
+  'body.proximaD.desc': 'A sub-Earth of merely 0.26 Earth masses minimum, discovered in 2022 with the ESPRESSO spectrograph — one of the lowest-mass planets ever found by radial velocity. Its 5.1-day orbit lies inside that of Proxima b: too hot for liquid water, most likely a scorched ball of rock.',
+
+  // --- Bodies: Ross 128 ---
+  'body.ross128Star.name': 'Ross 128',
+  'body.ross128Star.desc': 'A remarkably quiet red dwarf in Virgo, 11 light-years away. Unlike Proxima it hardly flares: old age and slow rotation (~121 days) have calmed its magnetic activity — excellent conditions for habitable planets. In 2017 a mysterious radio signal from its direction made headlines; it turned out to be interference from geostationary satellites.',
+  'body.ross128B.name': 'Ross 128 b',
+  'body.ross128B.desc': 'A temperate exoplanet of at least 1.4 Earth masses on a 9.86-day orbit. It receives about 38% more irradiation than Earth, placing it at the inner edge of the habitable zone — whether liquid water exists depends on its unknown atmosphere. Thanks to its quiet star it ranks among the most promising nearby candidates for habitability.',
+
   'body.halley.name': 'Halley’s Comet',
   'body.halley.desc': 'The most famous of all comets returns to the inner Solar System every 75–76 years; last in 1986, next in 2061. Its nucleus is a 15 km, coal-black lump of ice and dust. Approaching the Sun, the ice sublimates and forms two tails: a blue ion tail and a curved dust tail. It orbits backwards — against the direction of every planet.',
 };

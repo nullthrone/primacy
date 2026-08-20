@@ -192,6 +192,8 @@ html, body {
 .crumb.current { color: var(--ink); cursor: default; }
 .crumb-sep { color: var(--muted); opacity: 0.6; }
 .top-actions { display: flex; gap: 8px; }
+#system-switch { background: rgba(8, 12, 20, 0.5); }
+#system-switch button { padding: 6px 13px; }
 
 .icon-btn, .pill-btn {
   background: rgba(255, 255, 255, 0.05);

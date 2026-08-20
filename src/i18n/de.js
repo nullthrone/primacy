@@ -117,6 +117,24 @@ export const de = {
   'body.pluto.desc': 'Der berühmteste Zwergplanet zeigte bei der New-Horizons-Passage 2015 eine Überraschung: eine junge, geologisch aktive Welt mit Stickstoffgletschern, Eisbergen aus Wasser und der hellen, herzförmigen Ebene Sputnik Planitia. Seine stark geneigte, exzentrische Bahn kreuzt zeitweise die des Neptun.',
   'body.ceres.name': 'Ceres',
   'body.ceres.desc': 'Ceres ist das größte Objekt des Asteroidengürtels und der einzige Zwergplanet des inneren Sonnensystems. Die mysteriösen weißen Flecken im Occator-Krater entpuppten sich als Salzablagerungen — Rückstände einer salzigen Sole, die aus dem Untergrund aufsteigt. Möglicherweise birgt Ceres noch heute Reste eines unterirdischen Ozeans.',
+  'fact.lyUnit': 'Lichtjahre',
+
+  // --- Bodies: Proxima Centauri ---
+  'body.proximaStar.name': 'Proxima Centauri',
+  'body.proximaStar.desc': 'Der sonnennächste Stern (4,24 Lichtjahre) ist ein roter Zwerg mit nur anderthalb Jupiterdurchmessern und 0,17 % der Sonnenleuchtkraft. Er ist ein notorischer Flare-Stern: Magnetische Ausbrüche vervielfachen seine Helligkeit binnen Minuten und bombardieren die Planeten mit Röntgenstrahlung. Als Teil des Alpha-Centauri-Dreifachsystems umkreist er das helle Paar α Cen A und B in etwa 550.000 Jahren.',
+  'body.proximaB.name': 'Proxima Centauri b',
+  'body.proximaB.desc': 'Der nächstgelegene bekannte Exoplanet überhaupt. Mit mindestens 1,07 Erdmassen umkreist er seinen Stern alle 11,2 Tage in nur 0,049 AE Abstand — und liegt damit mitten in der habitablen Zone des schwachen Zwergsterns. Vermutlich rotiert er gebunden: ewiger Tag auf der einen, ewige Nacht auf der anderen Seite. Radius und Atmosphäre sind unbekannt — diese Darstellung ist wissenschaftlich informierte Spekulation.',
+  'body.proximaC.name': 'Proxima Centauri c',
+  'body.proximaC.desc': 'Ein unbestätigter Kandidat: Radialgeschwindigkeits- und Astrometrie-Daten deuten auf eine Super-Erde von mindestens 5,8 Erdmassen bei 1,5 AE, Umlaufzeit 5,3 Jahre. Dort draußen empfängt sie kaum Licht — die Gleichgewichtstemperatur liegt um −234 °C. Falls real, ist sie eine gefrorene Welt, womöglich mit Wasserstoffhülle.',
+  'body.proximaD.name': 'Proxima Centauri d',
+  'body.proximaD.desc': 'Eine Sub-Erde von nur mindestens 0,26 Erdmassen, entdeckt 2022 mit dem ESPRESSO-Spektrografen — einer der masseärmsten jemals per Radialgeschwindigkeit gefundenen Planeten. Sein 5,1-Tage-Orbit liegt noch innerhalb von Proxima b: zu heiß für flüssiges Wasser, vermutlich ein glühender Felsball.',
+
+  // --- Bodies: Ross 128 ---
+  'body.ross128Star.name': 'Ross 128',
+  'body.ross128Star.desc': 'Ein bemerkenswert ruhiger roter Zwerg im Sternbild Jungfrau, 11 Lichtjahre entfernt. Anders als Proxima flackert er kaum: Sein hohes Alter und die langsame Rotation (~121 Tage) haben die magnetische Aktivität abklingen lassen — beste Voraussetzungen für lebensfreundliche Planeten. 2017 machte ein mysteriöses Radiosignal von hier Schlagzeilen; es entpuppte sich als Störung durch geostationäre Satelliten.',
+  'body.ross128B.name': 'Ross 128 b',
+  'body.ross128B.desc': 'Ein temperierter Exoplanet mit mindestens 1,4 Erdmassen und 9,86 Tagen Umlaufzeit. Er empfängt etwa 38 % mehr Strahlung als die Erde und steht damit am inneren Rand der habitablen Zone — ob flüssiges Wasser existiert, entscheidet die unbekannte Atmosphäre. Dank seines ruhigen Sterns gilt er als einer der aussichtsreichsten nahen Kandidaten für Bewohnbarkeit.',
+
   'body.halley.name': 'Halleyscher Komet',
   'body.halley.desc': 'Der berühmteste aller Kometen kehrt alle 75–76 Jahre ins innere Sonnensystem zurück; zuletzt 1986, das nächste Mal 2061. Sein Kern ist ein 15 km großer, kohlrabenschwarzer Brocken aus Eis und Staub. Nähert er sich der Sonne, verdampft das Eis und bildet zwei Schweife: einen blauen Ionenschweif und einen gebogenen Staubschweif. Er läuft rückwärts um die Sonne — entgegen der Richtung aller Planeten.',
 };

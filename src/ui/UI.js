@@ -5,12 +5,15 @@ import { t, lang, setLang } from './i18n.js';
  * glue that re-renders all UI pieces on language change.
  */
 export class UI {
-  constructor(app, { onOverview }) {
+  constructor(app, { onOverview, systems = [], onSystem }) {
     this.app = app;
     this.onOverview = onOverview;
+    this.systems = systems;
+    this.onSystem = onSystem;
 
     this.topbar = document.getElementById('topbar');
     this.breadcrumbs = document.getElementById('breadcrumbs');
+    this.systemSwitch = document.getElementById('system-switch');
     this.langBtn = document.getElementById('btn-lang');
     this.settingsBtn = document.getElementById('btn-settings');
     this.settingsRoot = document.getElementById('settings');
@@ -19,6 +22,14 @@ export class UI {
     this.settingsBtn.addEventListener('click', () => this.openSettings());
 
     this.renderStatics();
+  }
+
+  setActiveSystem(id) {
+    this.systemSwitch.innerHTML = this.systems.map((s) =>
+      `<button type="button" data-id="${s}" class="${s === id ? 'active' : ''}">${t(`system.${s}`)}</button>`).join('');
+    for (const b of this.systemSwitch.querySelectorAll('button')) {
+      b.addEventListener('click', () => this.onSystem?.(b.dataset.id));
+    }
   }
 
   renderStatics() {
@@ -65,6 +76,8 @@ export class UI {
           ${seg('set-labels', [['on', t('ui.on')], ['off', t('ui.off')]], app.labels.enabled ? 'on' : 'off')}</div>
         <div class="setting-row"><span>${t('ui.trails')}</span>
           ${seg('set-trails', [['on', t('ui.on')], ['off', t('ui.off')]], app.system.trailsEnabled ? 'on' : 'off')}</div>
+        <div class="setting-row"><span>${t('ui.hz')}</span>
+          ${seg('set-hz', [['on', t('ui.on')], ['off', t('ui.off')]], app.hzVisible ? 'on' : 'off')}</div>
       </div>`;
     this.settingsRoot.hidden = false;
 
@@ -81,6 +94,7 @@ export class UI {
     wire('set-quality', (v) => app.applyQuality(v));
     wire('set-labels', (v) => { app.labels.enabled = v === 'on'; });
     wire('set-trails', (v) => app.system.setTrailsVisible(v === 'on'));
+    wire('set-hz', (v) => app.setHZ(v === 'on'));
     this.settingsRoot.querySelector('#settings-close').addEventListener('click', () => {
       this.settingsRoot.hidden = true;
     });

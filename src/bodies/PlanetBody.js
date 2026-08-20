@@ -62,11 +62,12 @@ export class PlanetBody {
 
   /** Per-frame sun geometry (world space). */
   setSun(dirWorld, sunPosWorld, sunColor, bodyWorldPos) {
-    this.material.userData.sunHook?.(dirWorld, sunPosWorld, sunColor);
+    this.material.userData.sunHook?.(dirWorld, sunPosWorld, sunColor, this.mesh);
     for (const ex of this.extras) ex.setSun?.(dirWorld, sunPosWorld, sunColor, bodyWorldPos);
   }
 
   update(dt, camera) {
+    this.material.userData.tick?.(dt);
     for (const ex of this.extras) ex.update?.(dt, camera);
   }
 

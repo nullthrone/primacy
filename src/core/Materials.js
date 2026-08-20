@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import { earthVertex, earthFragment } from '../shaders/earth.glsl.js';
 import { atmosphereVertex, atmosphereFragment } from '../shaders/atmosphere.glsl.js';
+import { eyeballVertex, eyeballFragment } from '../shaders/eyeball.glsl.js';
 import { proceduralTexture } from '../procgen/ProceduralTextures.js';
 import { RingSystem } from '../bodies/RingSystem.js';
+
+const _q = new THREE.Quaternion();
 
 function idSeed(id) {
   let h = 2166136261;
@@ -87,6 +90,34 @@ export class Materials {
       };
       return mat;
     }
+    if (kind === 'eyeball') {
+      const cfg = def.material.eyeball ?? { type: 'temperate', seed: 1 };
+      const typeMap = { temperate: 0, dry: 1, hot: 2, ice: 3 };
+      const uniforms = {
+        uStarDirObj: { value: new THREE.Vector3(1, 0, 0) },
+        uStarDirWorld: { value: new THREE.Vector3(1, 0, 0) },
+        uSunColor: { value: new THREE.Color(1, 1, 1) },
+        uTime: { value: 0 },
+        uSeed: { value: cfg.seed ?? 1 },
+        uType: { value: typeMap[cfg.type] ?? 0 },
+      };
+      const mat = new THREE.ShaderMaterial({
+        vertexShader: eyeballVertex,
+        fragmentShader: eyeballFragment,
+        uniforms,
+      });
+      mat.userData.sunHook = (dir, pos, color, mesh) => {
+        uniforms.uStarDirWorld.value.copy(dir);
+        uniforms.uSunColor.value.copy(color);
+        if (mesh) {
+          mesh.getWorldQuaternion(_q).invert();
+          uniforms.uStarDirObj.value.copy(dir).applyQuaternion(_q);
+        }
+      };
+      mat.userData.tick = (dt) => { uniforms.uTime.value += dt; };
+      return mat;
+    }
+
     // Standard lit material — the star's PointLight does the shading.
     const mat = new THREE.MeshStandardMaterial({
       map: this._dayTexture(def),

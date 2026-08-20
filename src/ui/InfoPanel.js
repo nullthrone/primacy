@@ -67,6 +67,7 @@ export class InfoPanel {
 
     if (def.star) {
       add('fact.spectral', def.star.spectral);
+      if (def.star.distanceLy) add('fact.distance', `${fmt(def.star.distanceLy, 2)} ${t('fact.lyUnit')}`);
       add('fact.teff', `${fmt(def.star.teffK)} K`);
       if (def.star.luminositySun != null) add('fact.luminosity', `${fmt(def.star.luminositySun, 4)} L☉`);
       if (p.massE) add('fact.mass', `${fmt(p.massE / 333000, 3)} ${t('fact.solarMasses')}`);
