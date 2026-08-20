@@ -1,6 +1,8 @@
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Engine, webgl2Available } from './core/Engine.js';
 import { TimeEngine } from './core/TimeEngine.js';
+import { StarBody } from './bodies/StarBody.js';
 
 const canvas = document.getElementById('scene');
 const loadingEl = document.getElementById('loading');
@@ -21,19 +23,21 @@ function boot() {
   const time = new TimeEngine();
   engine.onFrame((dt) => time.tick(dt));
 
-  // --- M0 placeholder scene (replaced by SystemScene in M1/M2) ---
+  // --- M1 scene: the Sun (SystemScene takes over in M2) ---
   const scene = engine.scene;
-  scene.background = new THREE.Color(0x04060c);
-  const sphere = new THREE.Mesh(
-    new THREE.SphereGeometry(4, 48, 24),
-    new THREE.MeshStandardMaterial({ color: 0x3b76c4, roughness: 0.6, metalness: 0.05 })
-  );
-  scene.add(sphere);
-  const sun = new THREE.PointLight(0xfff2dd, 3, 0, 0);
-  sun.position.set(30, 18, 22);
-  scene.add(sun);
-  scene.add(new THREE.AmbientLight(0x223044, 0.6));
-  engine.onFrame((dt) => { sphere.rotation.y += dt * 0.3; });
+  scene.background = new THREE.Color(0x020308);
+
+  const sun = new StarBody({ id: 'sun', teffK: 5772, activity: 0.35, seed: 7 });
+  sun.setRadius(9.3);
+  scene.add(sun.group);
+  engine.onFrame((dt) => sun.update(dt, engine.camera));
+
+  engine.camera.position.set(0, 8, 46);
+  engine.camera.lookAt(0, 0, 0);
+  const controls = new OrbitControls(engine.camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  engine.onFrame(() => controls.update());
 
   engine.start();
 

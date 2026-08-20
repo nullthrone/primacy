@@ -31,7 +31,7 @@ export class Engine {
 
     this.composer = new EffectComposer(this.renderer);
     this.renderPass = new RenderPass(this.scene, this.camera);
-    this.bloomPass = new UnrealBloomPass(new THREE.Vector2(1024, 1024), 0.75, 0.55, 1.0);
+    this.bloomPass = new UnrealBloomPass(new THREE.Vector2(1024, 1024), 0.45, 0.35, 1.0);
     this.outputPass = new OutputPass();
     this.composer.addPass(this.renderPass);
     this.composer.addPass(this.bloomPass);
