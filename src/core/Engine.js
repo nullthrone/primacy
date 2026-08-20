@@ -2,7 +2,43 @@ import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+/**
+ * Final grade: gentle vignette, slight saturation lift, blue-noise-ish
+ * dithering against gradient banding. Runs after tone mapping in sRGB.
+ */
+const GradeShader = {
+  uniforms: {
+    tDiffuse: { value: null },
+    uVignette: { value: 0.32 },
+    uSaturation: { value: 1.07 },
+  },
+  vertexShader: /* glsl */ `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: /* glsl */ `
+    uniform sampler2D tDiffuse;
+    uniform float uVignette;
+    uniform float uSaturation;
+    varying vec2 vUv;
+    void main() {
+      vec4 c = texture2D(tDiffuse, vUv);
+      float d = distance(vUv, vec2(0.5, 0.5));
+      c.rgb *= 1.0 - uVignette * smoothstep(0.42, 0.95, d);
+      float lum = dot(c.rgb, vec3(0.2126, 0.7152, 0.0722));
+      c.rgb = mix(vec3(lum), c.rgb, uSaturation);
+      float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+      c.rgb += (n - 0.5) * (1.8 / 255.0);
+      gl_FragColor = c;
+    }
+  `,
+};
 
 /**
  * Owns the WebGL renderer, the post-processing chain and the frame loop.
@@ -31,13 +67,23 @@ export class Engine {
 
     this.scene = new THREE.Scene();
 
-    this.composer = new EffectComposer(this.renderer);
+    // HDR + MSAA composer target: half-float kills banding in the bloom
+    // chain, 8x samples keep lines and limbs clean — without this the
+    // whole post pipeline renders aliased 8-bit.
+    const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
+    const rt = new THREE.WebGLRenderTarget(size.x, size.y, {
+      type: THREE.HalfFloatType,
+      samples: 8,
+    });
+    this.composer = new EffectComposer(this.renderer, rt);
     this.renderPass = new RenderPass(this.scene, this.camera);
-    this.bloomPass = new UnrealBloomPass(new THREE.Vector2(1024, 1024), 0.45, 0.35, 1.0);
+    this.bloomPass = new UnrealBloomPass(new THREE.Vector2(1024, 1024), 0.5, 0.55, 1.0);
     this.outputPass = new OutputPass();
+    this.gradePass = new ShaderPass(GradeShader);
     this.composer.addPass(this.renderPass);
     this.composer.addPass(this.bloomPass);
     this.composer.addPass(this.outputPass);
+    this.composer.addPass(this.gradePass);
 
     this.maxDPR = Math.min(window.devicePixelRatio || 1, 2);
     // Overlays render after the composer (warp tunnel, compare scene):

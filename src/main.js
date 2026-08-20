@@ -4,6 +4,7 @@ import { Engine, webgl2Available } from './core/Engine.js';
 import { TimeEngine } from './core/TimeEngine.js';
 import { ScaleManager } from './core/ScaleManager.js';
 import { Materials } from './core/Materials.js';
+import { FlareOverlay } from './core/FlareOverlay.js';
 import { SystemScene } from './scenes/SystemScene.js';
 import { sol } from './data/sol.js';
 
@@ -35,9 +36,11 @@ async function boot() {
   const system = new SystemScene({ def: sol, engine, time, scale, materials });
   engine.setScene(system.scene);
 
+  const flare = new FlareOverlay(engine);
   engine.onFrame((dt) => {
     time.tick(dt);
     system.update(dt);
+    flare.track(system.star.worldPos);
   });
 
   engine.camera.position.set(0, 300, 560);

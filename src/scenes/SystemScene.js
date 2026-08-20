@@ -93,7 +93,8 @@ export class SystemScene {
 
     let trail = null;
     if (def.trail !== false && def.elements) {
-      trail = new OrbitTrail(def.elements, def.material?.tint ?? 0x5a7ca8);
+      const TRAIL_COLORS = { planet: 0x6b8fc4, dwarf: 0x8a78b8, moon: 0x60718e, comet: 0x7cb8dc };
+      trail = new OrbitTrail(def.elements, TRAIL_COLORS[def.type] ?? 0x5878a8);
       mount.add(trail.line);
     }
 
@@ -166,6 +167,13 @@ export class SystemScene {
         if (ctl.trail) ctl.trail.setHead(eccentricAnomalyAt(el, jd));
       }
       ctl.group.getWorldPosition(ctl.worldPos);
+
+      // Moon orbit lines only resolve once the camera closes in on the
+      // parent — from system range they are visual noise.
+      if (ctl.trail && ctl.def.moonScale && ctl.parent?.body?.displayRadius) {
+        const camDist = this.engine.camera.position.distanceTo(ctl.parent.worldPos);
+        ctl.trail.line.visible = camDist < ctl.parent.body.displayRadius * 60;
+      }
       if (ctl.def.physical.tidallyLocked && el) {
         // Face the parent exactly: spin angle = true longitude + pi.
         const { nu } = trueAnomalyAt(el, jd);

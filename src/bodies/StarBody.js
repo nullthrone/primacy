@@ -1,9 +1,8 @@
 import * as THREE from 'three';
-import { Lensflare, LensflareElement } from 'three/addons/objects/Lensflare.js';
 import { starVertex, starFragment } from '../shaders/star.glsl.js';
 import { coronaVertex, coronaFragment } from '../shaders/corona.glsl.js';
 import { blackbodyRGB } from '../procgen/Blackbody.js';
-import { makeGlowTexture, makeGhostTexture, makeStreakTexture } from '../procgen/FlareSprites.js';
+import { makeGlowTexture } from '../procgen/FlareSprites.js';
 
 const CORONA_SCALE = 2.7;
 const _camPos = new THREE.Vector3();
@@ -21,7 +20,7 @@ export class StarBody {
     teffK = 5772,
     activity = 0.3,
     seed = 1,
-    emissive = 1.45,
+    emissive = 1.6,
     granScale = 22,
     lensflare = true,
     lightIntensity = 3.4,
@@ -65,7 +64,7 @@ export class StarBody {
     this.coronaUniforms = {
       uTime: { value: 0 },
       uSeed: { value: seed * 3.1 },
-      uColor: { value: this.baseColor.clone().lerp(new THREE.Color(1, 1, 1), 0.35) },
+      uColor: { value: this.baseColor.clone().lerp(new THREE.Color(1, 1, 1), 0.5) },
       uStarRadius: { value: 1 / CORONA_SCALE },
       uIntensity: { value: 0.7 },
       uFlare: { value: 0 },
@@ -88,8 +87,8 @@ export class StarBody {
     const srgb = this.baseColor.clone().convertLinearToSRGB();
     const tint = `${Math.round(srgb.r * 255)},${Math.round(srgb.g * 255)},${Math.round(srgb.b * 255)}`;
     const glowTex = makeGlowTexture({
-      inner: 'rgba(255,248,235,1)',
-      mid: `rgba(${tint},0.30)`,
+      inner: 'rgba(255,252,246,1)',
+      mid: `rgba(${tint},0.26)`,
       rays: true,
     });
     this.glow = new THREE.Sprite(new THREE.SpriteMaterial({
@@ -109,16 +108,9 @@ export class StarBody {
     this.light.color.copy(this.baseColor.clone().lerp(new THREE.Color(1, 1, 1), 0.5));
     this.group.add(this.light);
 
-    if (lensflare) {
-      const flare = new Lensflare();
-      flare.addElement(new LensflareElement(makeGlowTexture({ rays: false }), 130, 0, this.light.color));
-      flare.addElement(new LensflareElement(makeStreakTexture(), 380, 0));
-      flare.addElement(new LensflareElement(makeGhostTexture('170,215,255'), 60, 0.35));
-      flare.addElement(new LensflareElement(makeGhostTexture('255,210,160'), 34, 0.55));
-      flare.addElement(new LensflareElement(makeGhostTexture('170,255,220'), 90, 0.8));
-      flare.addElement(new LensflareElement(makeGhostTexture('200,200,255'), 48, 1.05));
-      this.light.add(flare);
-    }
+    // Screen-space lens ghosts live in the FlareOverlay (the stock
+    // Lensflare addon breaks against multisampled composer targets).
+    this.wantsLensflare = lensflare;
   }
 
   /** Display radius in scene units. */
@@ -146,7 +138,7 @@ export class StarBody {
       const radius = this.mesh.scale.x;
       const dist = camera.getWorldPosition(_camPos).distanceTo(this.group.getWorldPosition(_starPos));
       const apparent = radius / Math.max(dist, radius * 1.01);
-      const t = THREE.MathUtils.smoothstep(apparent, 0.06, 0.5);
+      const t = THREE.MathUtils.smoothstep(apparent, 0.16, 0.55);
       this.uniforms.uEmissive.value = THREE.MathUtils.lerp(this.emissiveFar, 0.82, t);
       this.glow.material.opacity = THREE.MathUtils.lerp(0.18, 0.04, t);
       this.coronaUniforms.uIntensity.value = THREE.MathUtils.lerp(0.7, 0.25, t);

@@ -10,7 +10,7 @@ import { mulberry32 } from './Prng.js';
 
 const W = 1024, H = 512;
 
-function makeNoise(seed) {
+export function makeNoise(seed) {
   const rand = mulberry32(seed);
   const perm = new Uint8Array(512);
   const p = new Uint8Array(256);

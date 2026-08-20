@@ -1,10 +1,19 @@
 /** M1: sun shader — bright beacon from afar, resolved photosphere up close. */
 export default async function run({ app, shot, expect, sleep }) {
+  await app(() => {
+    const A = window.__APP__;
+    A.setPaused(true);
+    A.engine.camera.position.set(0, 8, 46);
+    A.controls.target.set(0, 0, 0);
+    A.controls.update();
+  });
+  await sleep(250);
   const disc = await app(() => window.__APP__.probe(770, 420, 60, 60));
   expect(disc.lum > 180, `sun disc is very bright (lum=${disc.lum.toFixed(1)})`);
 
-  const corner = await app(() => window.__APP__.probe(20, 20, 50, 50));
-  expect(corner.lum < 25, `deep space stays dark (lum=${corner.lum.toFixed(1)})`);
+  // Off-band deep space (the Milky Way band crosses the upper left).
+  const corner = await app(() => window.__APP__.probe(1250, 840, 50, 50));
+  expect(corner.lum < 30, `deep space stays dark (lum=${corner.lum.toFixed(1)})`);
 
   const halo = await app(() => window.__APP__.probe(1010, 450, 40, 40));
   expect(halo.lum > 3 && halo.lum < 200, `corona halo present (lum=${halo.lum.toFixed(1)})`);

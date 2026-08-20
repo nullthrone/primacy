@@ -23,9 +23,9 @@ varying float vPhase;
 void main() {
   #include <logdepthbuf_fragment>
   float behind = fract(uHead - vPhase);        // 0 at the body, 1 full lap back
-  float tail = pow(1.0 - behind, 3.0);
-  float alpha = uOpacity * (0.10 + 0.90 * tail);
-  gl_FragColor = vec4(uColor, alpha);
+  float tail = pow(1.0 - behind, 3.2);
+  float alpha = uOpacity * (0.08 + 0.92 * tail);
+  gl_FragColor = vec4(uColor * alpha, alpha);
 }
 `;
 
@@ -48,10 +48,11 @@ export class OrbitTrail {
       uniforms: {
         uColor: { value: new THREE.Color(color) },
         uHead: { value: 0 },
-        uOpacity: { value: 0.55 },
+        uOpacity: { value: 0.62 },
       },
       transparent: true,
       depthWrite: false,
+      blending: THREE.AdditiveBlending,
     });
     this.line = new THREE.LineLoop(this.geometry, this.material);
     this.line.frustumCulled = false;
