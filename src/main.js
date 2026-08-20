@@ -8,7 +8,9 @@ import { CameraRig } from './core/CameraRig.js';
 import { Picker } from './core/Picker.js';
 import { SceneRouter } from './core/SceneRouter.js';
 import { LabelManager } from './ui/LabelManager.js';
-import { SYSTEM_DEFS, SYSTEM_ORDER } from './data/systems.js';
+import { SYSTEM_DEFS, VIEW_ORDER, loadStarCatalog } from './data/systems.js';
+import { InterstellarScene } from './scenes/InterstellarScene.js';
+import { WarpTransition } from './scenes/WarpTransition.js';
 import { t, onLang } from './ui/i18n.js';
 import { UI } from './ui/UI.js';
 import { InfoPanel } from './ui/InfoPanel.js';
@@ -28,6 +30,7 @@ const OVERVIEW = {
   sol: { pos: new THREE.Vector3(0, 300, 560), target: new THREE.Vector3(0, 0, 0) },
   proxima: { pos: new THREE.Vector3(0, 55, 105), target: new THREE.Vector3(0, 0, 0) },
   ross128: { pos: new THREE.Vector3(0, 48, 92), target: new THREE.Vector3(0, 0, 0) },
+  map: { pos: new THREE.Vector3(0, 300, 520), target: new THREE.Vector3(0, 0, 0) },
 };
 
 async function boot() {
@@ -44,14 +47,21 @@ async function boot() {
   const materials = new Materials();
   const progressEl = document.getElementById('loading-progress');
   await materials.init((f) => {
-    progressEl.style.width = `${Math.round(f * 100)}%`;
+    progressEl.style.width = `${Math.round(f * 80)}%`;
   });
+  const catalog = await loadStarCatalog();
+  progressEl.style.width = '100%';
 
-  const nameOf = (ctl) => t(`${ctl.def.i18n ?? `body.${ctl.id}`}.name`);
+  const nameOf = (ctl) => (ctl.def.type === 'system'
+    ? t(ctl.def.i18n)
+    : t(`${ctl.def.i18n ?? `body.${ctl.id}`}.name`));
 
   const router = new SceneRouter({
-    engine, time, scale, materials,
+    engine, time, scale, materials, catalog,
     defs: SYSTEM_DEFS,
+    custom: {
+      map: () => new InterstellarScene({ engine, catalog }),
+    },
     makeLabels: (scene) => {
       const lm = new LabelManager(
         engine,
@@ -71,6 +81,7 @@ async function boot() {
     (id) => app.select(id));
 
   const flare = new FlareOverlay(engine);
+  const warp = new WarpTransition(engine);
 
   // ---------- App state / debug API ----------
   const _pos = new THREE.Vector3();
@@ -97,21 +108,29 @@ async function boot() {
     setScaleMode: (m) => scale.setMode(m),
     onSelect: (fn) => { selectListeners.add(fn); return () => selectListeners.delete(fn); },
     onSystem: (fn) => { systemListeners.add(fn); return () => systemListeners.delete(fn); },
-    setSystem: (id, { position = true } = {}) => {
+    setSystem: (id, { position = true, warp: useWarp = false } = {}) => {
       if (!router.has(id) || router.activeId === id) return false;
-      app.selected = null;
-      rig.stop();
-      const entry = router.switchTo(id);
-      entry.scene.setHZVisible(app.hzVisible);
-      if (position && OVERVIEW[id]) {
-        engine.camera.position.copy(OVERVIEW[id].pos);
-        rig.controls.target.copy(OVERVIEW[id].target);
-      }
-      for (const fn of systemListeners) fn(id, entry.scene);
-      for (const fn of selectListeners) fn(null, null);
+      const doSwitch = () => {
+        app.selected = null;
+        rig.stop();
+        const entry = router.switchTo(id);
+        entry.scene.setHZVisible(app.hzVisible);
+        if (position && OVERVIEW[id]) {
+          engine.camera.position.copy(OVERVIEW[id].pos);
+          rig.controls.target.copy(OVERVIEW[id].target);
+        }
+        for (const fn of systemListeners) fn(id, entry.scene);
+        for (const fn of selectListeners) fn(null, null);
+      };
+      if (useWarp && app.ready) warp.run(doSwitch);
+      else doSwitch();
       return true;
     },
     select: (id) => {
+      // On the interstellar map, picking a beacon warps into that system.
+      if (router.activeId === 'map' && SYSTEM_DEFS[id]) {
+        return app.setSystem(id, { warp: true });
+      }
       const ctl = router.active?.scene.controllers.get(id);
       if (!ctl) return false;
       app.selected = id;
@@ -198,8 +217,8 @@ async function boot() {
   document.getElementById('ui').hidden = false;
   const ui = new UI(app, {
     onOverview: () => app.overview(),
-    systems: SYSTEM_ORDER,
-    onSystem: (id) => app.setSystem(id),
+    systems: VIEW_ORDER,
+    onSystem: (id) => app.setSystem(id, { warp: id !== 'map' && router.activeId !== 'map' }),
   });
   const infoPanel = new InfoPanel(document.getElementById('info-panel'), {
     onClose: () => app.deselect(),
@@ -267,9 +286,10 @@ async function boot() {
     if (!active) return;
     active.scene.update(dt);
     rig.update(dt);
+    warp.update(dt);
     active.labels.update();
     timeControls.update();
-    flare.track(active.scene.star.worldPos);
+    flare.track(active.scene.star?.worldPos ?? null);
   });
 
   engine.start();

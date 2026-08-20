@@ -19,7 +19,7 @@ const _sunDir = new THREE.Vector3();
  * Kepler positions in AU mapped through the ScaleManager.
  */
 export class SystemScene {
-  constructor({ def, engine, time, scale, materials = null }) {
+  constructor({ def, engine, time, scale, materials = null, catalog = null }) {
     this.def = def;
     this.engine = engine;
     this.time = time;
@@ -29,7 +29,11 @@ export class SystemScene {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x010208);
 
-    this.sky = new SkyDome({ seed: def.id === 'sol' ? 42 : def.id.length * 101 });
+    this.sky = new SkyDome({
+      seed: def.id === 'sol' ? 42 : def.id.length * 101,
+      catalog,
+      observerPc: def.observerPc ?? null,
+    });
     this.scene.add(this.sky.group);
 
     this.controllers = new Map(); // id -> controller

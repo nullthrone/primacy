@@ -48,6 +48,10 @@ export class FlareOverlay {
 
   /** Call per frame with the flare source (star) world position. */
   track(worldPos, intensity = 1) {
+    if (!worldPos) {
+      for (const child of this.scene.children) child.visible = false;
+      return;
+    }
     const cam = this.engine.camera;
     this._ndc.copy(worldPos).project(cam);
     const behind = this._ndc.z > 1 || this._ndc.z < -1;

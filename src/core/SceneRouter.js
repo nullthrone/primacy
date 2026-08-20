@@ -5,13 +5,15 @@
 import { SystemScene } from '../scenes/SystemScene.js';
 
 export class SceneRouter {
-  constructor({ engine, time, scale, materials, defs, makeLabels }) {
+  constructor({ engine, time, scale, materials, defs, makeLabels, catalog = null, custom = {} }) {
     this.engine = engine;
     this.time = time;
     this.scale = scale;
     this.materials = materials;
     this.defs = defs;
     this.makeLabels = makeLabels;
+    this.catalog = catalog;
+    this.custom = custom;
     this.entries = new Map();
     this.activeId = null;
   }
@@ -21,20 +23,23 @@ export class SceneRouter {
   }
 
   has(id) {
-    return !!this.defs[id];
+    return !!this.defs[id] || !!this.custom[id];
   }
 
   switchTo(id) {
-    if (!this.defs[id]) return null;
+    if (!this.has(id)) return null;
     let entry = this.entries.get(id);
     if (!entry) {
-      const scene = new SystemScene({
-        def: this.defs[id],
-        engine: this.engine,
-        time: this.time,
-        scale: this.scale,
-        materials: this.materials,
-      });
+      const scene = this.custom[id]
+        ? this.custom[id]()
+        : new SystemScene({
+          def: this.defs[id],
+          engine: this.engine,
+          time: this.time,
+          scale: this.scale,
+          materials: this.materials,
+          catalog: this.catalog,
+        });
       const labels = this.makeLabels(scene);
       entry = { id, scene, labels };
       this.entries.set(id, entry);

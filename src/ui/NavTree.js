@@ -36,6 +36,10 @@ export class NavTree {
     if (!this.systemDef) return;
     this.searchEl.placeholder = t('ui.search');
     this.overviewBtn.textContent = t('ui.overview');
+    if (!this.systemDef.star) {
+      this.listEl.innerHTML = '';
+      return;
+    }
     const q = this.searchEl.value.trim().toLowerCase();
     const def = this.systemDef;
     const starId = def.star.id;
