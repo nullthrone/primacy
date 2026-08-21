@@ -82,7 +82,7 @@ async function boot() {
     },
   });
 
-  const rig = new CameraRig(engine, canvas);
+  const rig = new CameraRig(engine, canvas, scale);
 
   new Picker(engine, canvas,
     () => (router.active ? router.active.scene.controllers.values() : []),
@@ -386,6 +386,9 @@ async function boot() {
     timeControls.update();
     rv.update();
     flare.track(active.scene.star?.worldPos ?? null);
+    // After every camera mutation this frame: keep the sky glued to the
+    // camera so the background exists at any camera position.
+    router.active?.scene.sky?.track(engine.camera);
   });
 
   engine.start();
