@@ -146,6 +146,17 @@ export class SkyDome {
     this.group.add(this.points);
   }
 
+  /**
+   * The sky is directional only: keep the dome centered on the camera so
+   * the panorama and star field never fall behind or slip off-frame when
+   * the camera travels far from the origin (true-scale trips put Earth at
+   * ~150k units, well outside the 40k dome; deep zoom-outs do the same).
+   * Call after all camera movement for the frame, right before rendering.
+   */
+  track(camera) {
+    this.group.position.copy(camera.position);
+  }
+
   _catalogEntries(cat, observerPc) {
     const entries = [];
     const p = new THREE.Vector3();

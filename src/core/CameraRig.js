@@ -4,6 +4,14 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 const _end = new THREE.Vector3();
 const _delta = new THREE.Vector3();
 
+// Farthest catalogued point from any system barycenter: Halley's aphelion,
+// ~35.1 AU. Camera bounds derive from where this lands in scene units at
+// the current scale blend, so they follow mode transitions exactly.
+const OUTERMOST_AU = 36;
+// Didactic floors: systems span ~420 u, the interstellar map ~850 u.
+const MIN_MAX_DISTANCE = 4000;
+const MIN_TARGET_RADIUS = 2000;
+
 function easeInOut(t) {
   return t * t * (3 - 2 * t);
 }
@@ -16,13 +24,15 @@ function easeInOut(t) {
  * distance to the target's surface.
  */
 export class CameraRig {
-  constructor(engine, domElement) {
+  constructor(engine, domElement, scale = null) {
     this.engine = engine;
     this.camera = engine.camera;
+    this.scale = scale;
     this.controls = new OrbitControls(this.camera, domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.07;
-    this.controls.maxDistance = 1.2e7;
+    this.controls.maxDistance = MIN_MAX_DISTANCE;
+    this.controls.maxTargetRadius = MIN_TARGET_RADIUS;
     this.followCtl = null;
     this.flight = null;
     this._lastFollowPos = new THREE.Vector3();
@@ -134,6 +144,17 @@ export class CameraRig {
       this.controls.minDistance = Math.max(r * 1.35, 0.01);
     } else {
       this.controls.minDistance = 0.01;
+    }
+
+    // Bound dolly and pan to the world's current extent so the camera can
+    // never be lost in the void with nothing on screen. Tracking the live
+    // scale blend keeps the bounds outside every reachable body mid-
+    // transition, and reels a far-out camera back in when the world
+    // shrinks from true scale to didactic underneath it.
+    if (this.scale) {
+      const worldR = this.scale.mapDistance(OUTERMOST_AU);
+      this.controls.maxDistance = Math.max(MIN_MAX_DISTANCE, worldR * 2.2);
+      this.controls.maxTargetRadius = Math.max(MIN_TARGET_RADIUS, worldR * 1.2);
     }
 
     // Distance-adaptive interaction speeds.
