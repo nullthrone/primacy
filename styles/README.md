@@ -27,6 +27,16 @@ same whatever the OS prefers. The token files still carry the light palette
 verbatim — they are copied unmodified so they can be re-synced — but nothing in
 the app selects it.
 
+## The one value that is not a token
+
+`--scene-void` (`#010208`) — the ground behind the 3D canvas. It matches what
+the scenes themselves clear to and is deliberately *not* a design-system
+surface: the system's darkest ground (`--paper`, `#17161A`) is a warm grey,
+which is right under a panel and wrong behind a star field. Where a browser
+lets the page show through the canvas, a warm grey ground washes the stars out
+entirely. `src/core/Engine.js` clears the renderer to the same value, so the
+void holds whichever layer ends up painting it.
+
 ## Layout
 
 Panels offset themselves against the two fixed bars via `--topbar-h` and

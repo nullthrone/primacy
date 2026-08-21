@@ -43,6 +43,13 @@
 
   --hud-w-nav: 218px;
   --hud-w-info: 336px;
+
+  /* The void behind the scene is *content*, not chrome: it is the same
+     near-black the 3D scenes clear to (src/scenes/*.js), not a design-system
+     surface. The system's darkest ground (--paper, #17161A) is a warm grey —
+     correct under a panel, wrong behind a star field, where it washes the
+     stars out wherever the canvas lets the page show through. */
+  --scene-void: #010208;
 }
 
 * { box-sizing: border-box; }
@@ -51,6 +58,7 @@ html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;
+  background: var(--scene-void);
   color: var(--text-body);
   font-family: var(--font-body);
   font-size: var(--text-sm);
@@ -88,6 +96,7 @@ html, body {
   width: 100%;
   height: 100%;
   display: block;
+  background: var(--scene-void);
   touch-action: none;
   outline: none;
 }
