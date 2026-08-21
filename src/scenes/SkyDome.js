@@ -75,6 +75,9 @@ export class SkyDome {
       fog: false,
     });
     panoMat.toneMapped = false;
+    // Lift above the black-crush floor of consumer displays; the band
+    // core stays well under clipping.
+    panoMat.color.setScalar(1.35);
     this.pano = new THREE.Mesh(new THREE.SphereGeometry(SKY_RADIUS * 1.02, 48, 24), panoMat);
     this.pano.rotation.set(THREE.MathUtils.degToRad(62), 0.25, THREE.MathUtils.degToRad(24));
     this.pano.renderOrder = -3;
@@ -168,8 +171,11 @@ export class SkyDome {
       const m = absmag + 5 * (Math.log10(dist) - 1);
       if (m > 6.8) return null;
       eqDirToScene(relVec.normalize(), dir);
-      const bright = THREE.MathUtils.clamp(Math.pow(10, -0.4 * (m - 0.6)), 0.035, 3.4);
-      const size = THREE.MathUtils.clamp(1.15 + (2.2 - m) * 0.5, 1.15, 5.4);
+      // Floors sized so the faint end of the sky stays above the black-
+      // crush threshold of consumer displays (sub-2px points below ~0.07
+      // render around 30/255 after tone mapping and vanish there).
+      const bright = THREE.MathUtils.clamp(Math.pow(10, -0.4 * (m - 0.6)), 0.075, 3.4);
+      const size = THREE.MathUtils.clamp(1.15 + (2.2 - m) * 0.5, 1.6, 5.4);
       const color = bvColor(ci, new THREE.Color());
       const e = { dir: dir.clone(), bright, size, color, m };
       entries.push(e);
@@ -205,7 +211,7 @@ export class SkyDome {
       const phi = prng.float(0, 2 * Math.PI);
       const rxy = Math.sqrt(Math.max(0, 1 - z * z));
       const u = prng.next();
-      const bright = 0.05 + 0.5 * Math.pow(u, 3.0) + 2.3 * Math.pow(u, 24.0);
+      const bright = 0.09 + 0.5 * Math.pow(u, 3.0) + 2.3 * Math.pow(u, 24.0);
       const t = prng.next();
       if (t < 0.10) color.setRGB(0.62, 0.72, 1.0);
       else if (t < 0.32) color.setRGB(0.85, 0.90, 1.0);
@@ -215,7 +221,7 @@ export class SkyDome {
       entries.push({
         dir: new THREE.Vector3(rxy * Math.cos(phi), z, rxy * Math.sin(phi)),
         bright,
-        size: 1.1 + 1.6 * Math.pow(u, 3.0) + 4.6 * Math.pow(u, 30.0),
+        size: 1.5 + 1.6 * Math.pow(u, 3.0) + 4.6 * Math.pow(u, 30.0),
         color: color.clone(),
       });
     }
@@ -242,7 +248,7 @@ export class SkyDome {
         // Dust: moderately elongated cells, strongest near the band core.
         const ridge = Math.abs(fbm(u * 6, v * 10 + 31, 4));
         const dust = 1.0 - Math.max(0, 0.62 - ridge * 2.0) * fall * fall;
-        inten *= Math.max(0.16, dust);
+        inten *= Math.max(0.22, dust);
         inten += fbm(u * 40, v * 40, 3) * 0.04 * fall; // unresolved star speckle
         const du = Math.min(Math.abs(u - 0.5), 1 - Math.abs(u - 0.5));
         const core = Math.exp(-(du * du) / 0.012) * Math.exp(-(band * band) / 0.05) * 0.5;

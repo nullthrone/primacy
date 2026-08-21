@@ -189,6 +189,9 @@ export class Engine {
       }
       this.renderer.autoClear = prevAutoClear;
     }
+    // Post-render hook (diagnostics): draw stats are complete and the
+    // drawing buffer is still valid here, unlike in onFrame callbacks.
+    this.afterRender?.();
   }
 
   get fps() {
