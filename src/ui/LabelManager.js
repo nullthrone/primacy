@@ -18,7 +18,7 @@ export class LabelManager {
     this.getName = getName;
     this.onClick = onClick;
     this.entries = new Map();
-    this.markerTex = makeDotTexture('180,205,235', 48);
+    this.markerTex = makeDotTexture('200,158,74', 48);
     this.enabled = true;
   }
 

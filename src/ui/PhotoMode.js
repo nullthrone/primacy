@@ -8,7 +8,7 @@ export class PhotoMode {
     this.active = false;
     hintRoot.innerHTML = `
       <span class="photo-hint-text"></span>
-      <button class="pill-btn photo-save" type="button"></button>
+      <button class="text-btn photo-save" type="button"></button>
     `;
     hintRoot.querySelector('.photo-save').addEventListener('click', () => this.save());
   }

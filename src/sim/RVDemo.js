@@ -23,10 +23,30 @@ export class RVDemo {
     this.titleEl = root.querySelector('.rv-title');
     this.noteEl = root.querySelector('.rv-note');
     root.querySelector('.rv-close').addEventListener('click', () => this.hide());
+    this.readTokens();
+  }
+
+  /**
+   * The chart paints with the design-system tokens rather than its own
+   * hexes: ink for the data, brass for the live marker, hairlines for the
+   * grid. Re-read on show so a theme change is picked up.
+   */
+  readTokens() {
+    const cs = getComputedStyle(document.documentElement);
+    const v = (name, fallback) => cs.getPropertyValue(name).trim() || fallback;
+    this.c = {
+      data: v('--ink-950', '#EFEDE7'),
+      marker: v('--brass-500', '#C89E4A'),
+      grid: v('--ink-300', '#4C4952'),
+      gridFaint: v('--ink-200', '#33313A'),
+      label: v('--ink-500', '#8A8781'),
+      mono: v('--font-mono', 'ui-monospace, monospace'),
+    };
   }
 
   show({ name, periodD, kMS, epoch = 2451545.0 }) {
     this.params = { name, periodD, kMS, epoch };
+    this.readTokens();
     this.root.hidden = false;
     this.titleEl.textContent = `${t('ui.rvShow')} — ${name}`;
     this.noteEl.textContent = `${t('ui.rvNote')} K = ${fmt(kMS, 2)} m/s · P = ${fmt(periodD, 2)} d · ${t('ui.rvWobble')}`;
@@ -51,7 +71,8 @@ export class RVDemo {
 
     // --- Left: star wobble around barycenter ---
     const cx = 62, cy = H / 2 - 6, orbR = 34, starWobble = 9;
-    ctx.strokeStyle = 'rgba(140,160,190,0.35)';
+    const c = this.c;
+    ctx.strokeStyle = c.grid;
     ctx.setLineDash([3, 4]);
     ctx.beginPath();
     ctx.arc(cx, cy, orbR, 0, Math.PI * 2);
@@ -61,27 +82,26 @@ export class RVDemo {
     // Planet and star on opposite sides of the barycenter.
     const px = cx + Math.cos(a) * orbR, py = cy + Math.sin(a) * orbR;
     const sx = cx - Math.cos(a) * starWobble, sy = cy - Math.sin(a) * starWobble;
-    ctx.fillStyle = '#6ac8ff';
+    // Flat marks, no glows: the planet in brass, the star as an ink disc.
+    ctx.fillStyle = c.marker;
     ctx.beginPath(); ctx.arc(px, py, 4, 0, Math.PI * 2); ctx.fill();
-    const grad = ctx.createRadialGradient(sx, sy, 1, sx, sy, 13);
-    grad.addColorStop(0, '#ffd9b0');
-    grad.addColorStop(1, 'rgba(255,150,80,0)');
-    ctx.fillStyle = grad;
-    ctx.beginPath(); ctx.arc(sx, sy, 13, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = 'rgba(230,238,247,0.5)';
-    ctx.fillText('+', cx - 3, cy + 3);
+    ctx.fillStyle = c.data;
+    ctx.beginPath(); ctx.arc(sx, sy, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = c.label;
+    ctx.font = `10px ${c.mono}`;
+    ctx.fillText('+', cx - 3, cy + 4);
 
     // --- Right: RV curve ---
     const gx = 130, gw = W - gx - 14, gy = 24, gh = H - 58;
-    ctx.strokeStyle = 'rgba(140,160,190,0.4)';
-    ctx.strokeRect(gx, gy, gw, gh);
-    ctx.strokeStyle = 'rgba(140,160,190,0.25)';
+    ctx.strokeStyle = c.grid;
+    ctx.strokeRect(gx + 0.5, gy + 0.5, gw, gh);
+    ctx.strokeStyle = c.gridFaint;
     ctx.beginPath();
     ctx.moveTo(gx, gy + gh / 2);
     ctx.lineTo(gx + gw, gy + gh / 2);
     ctx.stroke();
 
-    ctx.strokeStyle = '#6ac8ff';
+    ctx.strokeStyle = c.data;
     ctx.lineWidth = 1.6;
     ctx.beginPath();
     for (let i = 0; i <= gw; i++) {
@@ -96,16 +116,16 @@ export class RVDemo {
 
     const cxr = gx + phase * gw;
     const cyr = gy + gh / 2 - Math.sin(phase * Math.PI * 2) * (gh / 2 - 8);
-    ctx.strokeStyle = 'rgba(255,178,107,0.7)';
+    ctx.strokeStyle = c.marker;
     ctx.beginPath();
     ctx.moveTo(cxr, gy);
     ctx.lineTo(cxr, gy + gh);
     ctx.stroke();
-    ctx.fillStyle = '#ffb26b';
+    ctx.fillStyle = c.marker;
     ctx.beginPath(); ctx.arc(cxr, cyr, 4, 0, Math.PI * 2); ctx.fill();
 
-    ctx.fillStyle = 'rgba(147,161,181,0.9)';
-    ctx.font = '10px ui-monospace, monospace';
+    ctx.fillStyle = c.label;
+    ctx.font = `10px ${c.mono}`;
     ctx.fillText(`+${fmt(this.params.kMS, 2)} m/s`, gx + 4, gy + 11);
     ctx.fillText(`-${fmt(this.params.kMS, 2)} m/s`, gx + 4, gy + gh - 4);
   }

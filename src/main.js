@@ -24,6 +24,7 @@ import { InfoPanel } from './ui/InfoPanel.js';
 import { NavTree } from './ui/NavTree.js';
 import { TimeControls } from './ui/TimeControls.js';
 import { HashRouter } from './ui/HashRouter.js';
+import { trackChromeMetrics } from './ui/ChromeMetrics.js';
 
 const canvas = document.getElementById('scene');
 const loadingEl = document.getElementById('loading');
@@ -310,6 +311,10 @@ async function boot() {
   });
   navTree.setSystem(router.active.scene.def);
   const timeControls = new TimeControls(document.getElementById('time-bar'), { time, scale });
+  trackChromeMetrics({
+    '--topbar-h': document.getElementById('topbar'),
+    '--timebar-h': document.getElementById('time-bar'),
+  });
   const hashRouter = new HashRouter(app);
 
   const refreshBreadcrumbs = () => {

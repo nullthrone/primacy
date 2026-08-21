@@ -21,8 +21,8 @@ export class TourPlayer {
       <p class="tour-text"></p>
       <div class="tour-progress"><div class="tour-bar"></div></div>
       <div class="tour-nav">
-        <button class="tour-prev pill-btn" type="button">‹</button>
-        <button class="tour-next pill-btn" type="button">›</button>
+        <button class="tour-prev text-btn" type="button">‹</button>
+        <button class="tour-next text-btn" type="button">›</button>
       </div>
     `;
     this.titleEl = root.querySelector('.tour-title');

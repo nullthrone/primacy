@@ -32,7 +32,7 @@ export class ComparePanel {
     // Opaque backdrop so the overlay reads as its own stage.
     const back = new THREE.Mesh(
       new THREE.PlaneGeometry(2, 2),
-      new THREE.MeshBasicMaterial({ color: 0x04060c })
+      new THREE.MeshBasicMaterial({ color: 0x17161a })
     );
     back.material.depthTest = false;
     back.frustumCulled = false;
@@ -96,26 +96,87 @@ export class ComparePanel {
   show() {
     this.enabled = true;
     document.body.classList.add('compare');
-    this.camera.aspect = window.innerWidth / window.innerHeight;
-    this.camera.updateProjectionMatrix();
+    const cam = this.camera;
+    cam.aspect = window.innerWidth / window.innerHeight;
+
+    // Frame the whole line-up for whatever aspect ratio we were handed. A
+    // phone held upright gets the same set, just further away — cropping it
+    // would hide exactly the comparison the mode exists to make.
+    let minX = Infinity, maxX = -Infinity, maxR = 0;
+    for (const { item, mesh, r } of this.slots) {
+      if (item.star) continue;
+      minX = Math.min(minX, mesh.position.x - r);
+      maxX = Math.max(maxX, mesh.position.x + r);
+      maxR = Math.max(maxR, r);
+    }
+    const centre = (minX + maxX) / 2;
+    const halfV = Math.tan((cam.fov * Math.PI) / 360);
+    const z = Math.max(
+      7.8,
+      ((maxX - minX) / 2 + 0.8) / (halfV * cam.aspect),
+      (maxR + 1.15) / halfV,
+    );
+    cam.position.set(centre, maxR * 0.35, z);
+    cam.lookAt(centre, 0, 0);
+    cam.updateProjectionMatrix();
+    // project() reads matrixWorldInverse — refresh it before placing captions.
+    cam.updateMatrixWorld(true);
+    this.keyLight.position.set(centre - z * 0.4, z * 0.45, z + 1.2);
+    this.keyLight.target.position.set(centre, 0, 0);
+
     // DOM captions under each body (static camera -> compute once).
     this._clearLabels();
+    this.labelRoot.hidden = false;
     const v = new THREE.Vector3();
+    const placed = [];
     for (const { item, mesh, r } of this.slots) {
       if (item.star) continue;
       v.copy(mesh.position);
       v.y -= r + 0.28;
-      v.project(this.camera);
+      v.project(cam);
+      if (Math.abs(v.x) > 1 || Math.abs(v.y) > 1) continue;
       const el = document.createElement('div');
       el.className = 'compare-label';
       const name = t(`${item.i18n ?? `body.${item.id}`}.name`);
       el.innerHTML = `<b>${name}</b><span>${fmt(item.radiusKm)} km${item.assumed ? ' ≈' : ''}</span>`;
-      el.style.left = `${((v.x * 0.5 + 0.5) * 100).toFixed(2)}%`;
-      el.style.top = `${((-v.y * 0.5 + 0.5) * 100).toFixed(2)}%`;
       this.labelRoot.appendChild(el);
       this.labels.push(el);
+      placed.push({
+        el,
+        x: (v.x * 0.5 + 0.5) * window.innerWidth,
+        y: (-v.y * 0.5 + 0.5) * window.innerHeight,
+      });
     }
-    this.labelRoot.hidden = false;
+    this._placeLabels(placed);
+  }
+
+  /**
+   * Positions the captions: clamped into the frame (a caption under a large
+   * body projects below it) and staggered onto a second line where the small
+   * bodies sit closer together than their labels are wide.
+   */
+  _placeLabels(placed) {
+    const pad = 8;
+    placed.sort((a, b) => a.x - b.x);
+    const ROWS = 3;
+    const rowRight = new Array(ROWS).fill(-Infinity);
+    let rowHeight = 0;
+    for (const p of placed) {
+      const w = p.el.offsetWidth;
+      const h = p.el.offsetHeight;
+      rowHeight = Math.max(rowHeight, h);
+      const left = Math.min(Math.max(p.x, w / 2 + pad), window.innerWidth - w / 2 - pad);
+      // First row this caption clears; if none does, it goes back on top.
+      let row = rowRight.findIndex((right) => left - w / 2 >= right + 6);
+      if (row < 0) row = 0;
+      const top = Math.min(
+        Math.max(p.y + row * (rowHeight + 6), pad),
+        window.innerHeight - h - pad
+      );
+      p.el.style.left = `${left.toFixed(1)}px`;
+      p.el.style.top = `${top.toFixed(1)}px`;
+      rowRight[row] = left + w / 2;
+    }
   }
 
   hide() {

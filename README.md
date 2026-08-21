@@ -21,8 +21,8 @@ python3 -m http.server 8080     # oder jeder andere statische Server
 # → http://localhost:8080
 ```
 
-Kein Build-Schritt, keine Laufzeit-Downloads: three.js ist gevendort, alle Assets
-liegen im Repo. **GitHub Pages:** Settings → Pages → „Deploy from a branch" →
+Kein Build-Schritt, keine Laufzeit-Downloads: three.js, Texturen, Sternkatalog
+und Webfonts sind gevendort, alle Assets liegen im Repo. **GitHub Pages:** Settings → Pages → „Deploy from a branch" →
 diesen Branch, Ordner `/` — fertig.
 
 ## Features
@@ -65,6 +65,26 @@ diesen Branch, Ordner `/` — fertig.
 
 Deep-Links funktionieren: `#/proxima/proxima-b?lang=en&scale=true`
 
+## Oberfläche
+
+Die Oberfläche ist das **Nullthrone Design System** in seiner Dark-Mode-Variante:
+warmes Fast-Schwarz (`#17161A`) als Grund, Messing (`#C89E4A`) als einziger
+Akzent, quadratische Ecken, 1px-Haarlinien als Struktur, gesperrte Versalien
+(Jost) für Labels, Public Sans für Fließtext, JetBrains Mono für Zahlen.
+Flächen sind deckend — kein Blur, keine Transparenz, kein Glas: Tiefe entsteht
+ausschließlich über Schatten. Die Tokens liegen unverändert unter
+`styles/tokens/`, die Webfonts gevendort unter `assets/fonts/`; Details und
+Re-Sync in [styles/README.md](styles/README.md).
+
+Das Layout sitzt von iPhone bis Desktop: die Kopfleiste klappt ihren
+System-Umschalter ab 1180px in eine zweite Zeile, der linke Baum weicht ab
+720px und die Enzyklopädie wird dort zum Bottom-Sheet, im Querformat-Handy
+kehren kurze Leisten und ein Seitenpanel zurück. Notch und Home-Indicator sind
+über `env(safe-area-inset-*)` berücksichtigt. `npm run verify` prüft das
+maschinell: eine Milestone-Suite fährt sieben Geräte-Viewports ab und schlägt
+fehl, sobald ein Element aus seinem Kasten läuft, das Sichtfeld verlässt oder
+mit einer Leiste kollidiert.
+
 ## Technik
 
 Vanilla ES-Module ohne Build-Schritt, three.js r185 (WebGL 2, gevendort),
@@ -92,8 +112,11 @@ auroras on demand; Ross 128 stays demonstratively quiet. Exoplanet surfaces
 are labeled artistic interpretations, and an honesty mode strips them back
 to what the data actually supports. Bilingual UI (German/English), didactic
 vs. true scale, guided tours, size comparison, probe trajectories, photo
-mode. No build step: clone, serve statically, done — or enable GitHub
-Pages on this branch.
+mode. The interface is the Nullthrone Design System in dark mode — warm
+near-black ground, one brass accent, square corners, hairline structure,
+opaque surfaces — and the layout holds from iPhone to desktop, verified
+across seven device viewports by the milestone suite. No build step: clone,
+serve statically, done — or enable GitHub Pages on this branch.
 
 Run it: `python3 -m http.server 8080` → `http://localhost:8080`
 

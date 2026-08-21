@@ -159,12 +159,12 @@ export class InterstellarScene {
     const proxPos = this.controllers.get('proxima').worldPos;
     const shotLine = new THREE.Line(
       new THREE.BufferGeometry().setFromPoints([solPos.clone(), proxPos.clone()]),
-      new THREE.LineDashedMaterial({ color: 0x6ac8ff, dashSize: 3, gapSize: 2.4, transparent: true, opacity: 0.55 })
+      new THREE.LineDashedMaterial({ color: 0xc89e4a, dashSize: 3, gapSize: 2.4, transparent: true, opacity: 0.55 })
     );
     shotLine.computeLineDistances();
     this.scene.add(shotLine);
     this.pulse = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: makeDotTexture('140,210,255'),
+      map: makeDotTexture('220,183,104'),
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,

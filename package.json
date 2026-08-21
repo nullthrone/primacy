@@ -8,6 +8,7 @@
     "vendor": "node tools/vendor-three.mjs",
     "fetch-textures": "node tools/fetch-textures.mjs",
     "fetch-stars": "node tools/fetch-stars.mjs",
+    "fetch-fonts": "node tools/fetch-fonts.mjs",
     "serve": "python3 -m http.server 8734",
     "verify": "node tools/verify/run-all.mjs"
   },

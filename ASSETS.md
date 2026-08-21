@@ -9,6 +9,21 @@ assets keep their own licenses:
 | --- | --- | --- |
 | `vendor/three/` | [three.js](https://github.com/mrdoob/three.js) 0.185.1 via npm | MIT |
 
+## Fonts (`assets/fonts/`)
+
+Fetched by `tools/fetch-fonts.mjs` (`npm run fetch-fonts`); the `latin` and
+`latin-ext` subsets of each family, vendored so the site makes no runtime
+requests. `assets/fonts/manifest.json` records the exact source URL per file.
+
+| Files | Family | Source | License |
+| --- | --- | --- | --- |
+| `jost-*` | Jost — display, headings, all-caps labels | [Google Fonts](https://fonts.google.com/specimen/Jost) (Owen Earl / indestructible type*) | SIL OFL 1.1 |
+| `public-sans-*` | Public Sans — body and UI text | [Google Fonts](https://fonts.google.com/specimen/Public+Sans) (USWDS) | SIL OFL 1.1 |
+| `jetbrains-mono-*` | JetBrains Mono — figures, dates, code | [Google Fonts](https://fonts.google.com/specimen/JetBrains+Mono) (JetBrains) | SIL OFL 1.1 |
+
+The three families are the typographic foundation of the Nullthrone Design
+System; see `styles/README.md`.
+
 ## Textures (`assets/textures/`)
 
 Fetched by `tools/fetch-textures.mjs`; `assets/textures/manifest.json`
