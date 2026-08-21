@@ -3,6 +3,8 @@
 **Eine interaktive 3D-Enzyklopädie dreier Sternensysteme — Sol, Proxima Centauri und Ross 128.**
 *An interactive 3D encyclopedia of three star systems — English summary below.*
 
+**▶ Live: [nullthrone.github.io/primacy](https://nullthrone.github.io/primacy/)**
+
 ![Saturn](docs/screenshots/hero-saturn.jpg)
 
 Primacy ist eine browserbasierte, immersive Visualisierung: echte Kepler-Bahnmechanik,
