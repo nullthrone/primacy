@@ -210,7 +210,7 @@ async function boot() {
       app.probesVisible = v;
       for (const e of router.entries.values()) e.traj?.setVisible(v);
     },
-    applyQuality: (tier) => {
+    applyQuality: (tier, persist = true) => {
       app.qualityTier = tier;
       const dpr = window.devicePixelRatio || 1;
       const belts = router.active?.scene.belts ?? [];
@@ -227,7 +227,9 @@ async function boot() {
         engine.bloomPass.enabled = false;
         for (const b of belts) b.setDensity(0.25);
       }
-      try { localStorage.setItem('primacy.quality', tier); } catch { /* ignore */ }
+      if (persist) {
+        try { localStorage.setItem('primacy.quality', tier); } catch { /* ignore */ }
+      }
     },
     listBodies: () => {
       const def = router.active?.scene.def;
@@ -393,10 +395,39 @@ async function boot() {
 
   engine.start();
 
-  try {
-    const savedQ = localStorage.getItem('primacy.quality');
-    if (savedQ) app.applyQuality(savedQ);
-  } catch { /* ignore */ }
+  let savedQ = null;
+  try { savedQ = localStorage.getItem('primacy.quality'); } catch { /* ignore */ }
+  if (savedQ) {
+    app.applyQuality(savedQ);
+  } else {
+    // Phones and tablets start one tier down: the full pipeline (DPR 2 +
+    // multisampled HDR composer + bloom) can blow a mobile GPU's frame
+    // budget, which on iOS Safari shows up as partially presented frames
+    // (a hard-edged black region) rather than merely low fps.
+    if (window.matchMedia?.('(pointer: coarse)').matches) {
+      app.applyQuality('medium', false);
+    }
+    // Watchdog: while the user has not chosen a tier, step down whenever
+    // the frame rate stays far under target. Never persisted, never up.
+    // Skipped under the ?q=low profile (headless verification runs).
+    const TIERS = engine.quality === 'low' ? [] : ['high', 'medium', 'low'];
+    let slowFor = 0;
+    let lastStep = 0;
+    engine.onFrame((dt) => {
+      slowFor = engine.fps < 24 ? slowFor + dt : 0;
+      if (slowFor < 4) return;
+      slowFor = 0;
+      const now = performance.now();
+      let chosen = null;
+      try { chosen = localStorage.getItem('primacy.quality'); } catch { /* ignore */ }
+      if (chosen || now - lastStep < 8000) return;
+      const i = TIERS.indexOf(app.qualityTier);
+      if (i >= 0 && i < TIERS.length - 1) {
+        app.applyQuality(TIERS[i + 1], false);
+        lastStep = now;
+      }
+    });
+  }
 
   requestAnimationFrame(() => requestAnimationFrame(() => {
     loadingEl.classList.add('done');

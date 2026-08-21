@@ -51,7 +51,12 @@ export class Engine {
     this.canvas = canvas;
     this.renderer = new THREE.WebGLRenderer({
       canvas,
-      antialias: true,
+      // No canvas MSAA: the composer target carries the multisampling, and
+      // the final pass is a fullscreen quad that MSAA cannot improve. A
+      // second multisampled surface would double GPU memory and resolve
+      // work per frame — enough to push mobile Safari into presenting
+      // incomplete frames (parts of the canvas stay black/transparent).
+      antialias: false,
       logarithmicDepthBuffer: true,
       powerPreference: 'high-performance',
     });
