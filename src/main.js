@@ -25,6 +25,7 @@ import { NavTree } from './ui/NavTree.js';
 import { TimeControls } from './ui/TimeControls.js';
 import { HashRouter } from './ui/HashRouter.js';
 import { trackChromeMetrics } from './ui/ChromeMetrics.js';
+import { DiagOverlay } from './ui/DiagOverlay.js';
 
 const canvas = document.getElementById('scene');
 const loadingEl = document.getElementById('loading');
@@ -394,6 +395,10 @@ async function boot() {
   });
 
   engine.start();
+
+  if (new URLSearchParams(window.location.search).get('diag') === '1') {
+    new DiagOverlay(engine, app);
+  }
 
   let savedQ = null;
   try { savedQ = localStorage.getItem('primacy.quality'); } catch { /* ignore */ }
