@@ -139,7 +139,15 @@ export class CometBody {
       if (!isIon && hasVel) {
         dir.addScaledVector(this._vel, -0.45).normalize();
       }
-      const side = _side.crossVectors(dir, camDir).normalize();
+      // Degenerate when the camera sits exactly on the tail axis: the
+      // cross product is zero and normalize() would fill the vertex
+      // buffer with NaN (tiled GPUs can blank whole screen regions on
+      // NaN geometry). Any perpendicular works there — the ribbon is
+      // seen end-on anyway.
+      const side = _side.crossVectors(dir, camDir);
+      if (side.lengthSq() < 1e-12) side.set(-dir.z, 0, dir.x);
+      if (side.lengthSq() < 1e-12) side.set(1, 0, 0);
+      side.normalize();
       const curve = isIon ? 0 : 0.22;
 
       const pos = tail.mesh.geometry.getAttribute('position');
