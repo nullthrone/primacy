@@ -35,6 +35,8 @@ export class DiagOverlay {
     const gl = engine.gl;
     const dbg = gl.getExtension('WEBGL_debug_renderer_info');
     this.gpu = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+    const at = gl.getContextAttributes();
+    this._attrs = `alpha:${at.alpha ? 1 : 0} pm:${at.premultipliedAlpha ? 1 : 0} aa:${at.antialias ? 1 : 0}`;
 
     this._quad = [0, 0, 0, 0];
     this._lastCount = 0;
@@ -47,20 +49,25 @@ export class DiagOverlay {
     if (this.errors.length > 3) this.errors.shift();
   }
 
-  /** Count lit pixels per screen quadrant from the previous frame. */
+  /** Lit pixels per screen quadrant + alpha stats from the current frame. */
   _countQuadrants() {
     const gl = this.engine.gl;
     const w = gl.drawingBufferWidth, h = gl.drawingBufferHeight;
     const buf = new Uint8Array(w * h * 4);
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, buf);
     const q = [0, 0, 0, 0]; // TL TR BL BR in screen orientation
+    let minA = 255, translucent = 0;
     for (let y = 0; y < h; y += 2) {
       for (let x = 0; x < w; x += 2) {
         const i = (y * w + x) * 4;
         const lum = 0.2126 * buf[i] + 0.7152 * buf[i + 1] + 0.0722 * buf[i + 2];
         if (lum > 10) q[(y < h / 2 ? 2 : 0) + (x < w / 2 ? 0 : 1)]++;
+        const alpha = buf[i + 3];
+        if (alpha < minA) minA = alpha;
+        if (alpha < 250) translucent++;
       }
     }
+    this._alpha = { minA, translucent };
     return q;
   }
 
@@ -88,6 +95,7 @@ export class DiagOverlay {
       `skyanchor delta=${anchor}u  bloom=${e.bloomPass.enabled ? 'on' : 'off'}`,
       `draws    ${info.calls} calls ${info.points} pts ${(info.triangles / 1000).toFixed(1)}k tri fps=${e.fps.toFixed(0)}`,
       `lit/quad TL=${this._quad[0]} TR=${this._quad[1]} BL=${this._quad[2]} BR=${this._quad[3]}`,
+      `alpha    ctx=${this._attrs} minA=${this._alpha?.minA ?? '-'} translucentPx=${this._alpha?.translucent ?? '-'}`,
       this.errors.length ? `errors   ${this.errors.join(' | ')}` : 'errors   none',
     ].join('\n');
   }

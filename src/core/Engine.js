@@ -6,6 +6,34 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 /**
+ * Scene sanitizer, run BEFORE bloom: scrubs NaN and caps out-of-range HDR
+ * values. On real GPUs (fp16 arithmetic, unlike SwiftShader's fp32) a
+ * single poisoned pixel gets smeared by the bloom mip chain into large
+ * screen-aligned rectangles that reach the canvas as black/transparent
+ * blocks over the sky.
+ */
+const SanitizeShader = {
+  uniforms: { tDiffuse: { value: null } },
+  vertexShader: /* glsl */ `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `,
+  fragmentShader: /* glsl */ `
+    uniform sampler2D tDiffuse;
+    varying vec2 vUv;
+    void main() {
+      vec4 c = texture2D(tDiffuse, vUv);
+      if (any(isnan(c.rgb))) c.rgb = vec3(0.0);
+      c.rgb = clamp(c.rgb, vec3(0.0), vec3(480.0));
+      gl_FragColor = vec4(c.rgb, 1.0);
+    }
+  `,
+};
+
+/**
  * Final grade: gentle vignette, slight saturation lift, blue-noise-ish
  * dithering against gradient banding. Runs after tone mapping in sRGB.
  */
@@ -35,7 +63,9 @@ const GradeShader = {
       c.rgb = mix(vec3(lum), c.rgb, uSaturation);
       float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
       c.rgb += (n - 0.5) * (1.8 / 255.0);
-      gl_FragColor = c;
+      // Force full opacity: alpha below 1 would let the page background
+      // composite through the canvas.
+      gl_FragColor = vec4(max(c.rgb, 0.0), 1.0);
     }
   `,
 };
@@ -57,6 +87,11 @@ export class Engine {
       // work per frame — enough to push mobile Safari into presenting
       // incomplete frames (parts of the canvas stay black/transparent).
       antialias: false,
+      // Opaque canvas: with the default (alpha:true, premultiplied) any
+      // pixel whose alpha ends below 1 — e.g. NaN flushed to 0 by a
+      // driver — composites the page background through the canvas as a
+      // solid block over the scene.
+      alpha: false,
       logarithmicDepthBuffer: true,
       powerPreference: 'high-performance',
     });
@@ -90,10 +125,12 @@ export class Engine {
     });
     this.composer = new EffectComposer(this.renderer, rt);
     this.renderPass = new RenderPass(this.scene, this.camera);
+    this.sanitizePass = new ShaderPass(SanitizeShader);
     this.bloomPass = new UnrealBloomPass(new THREE.Vector2(1024, 1024), 0.5, 0.55, 1.0);
     this.outputPass = new OutputPass();
     this.gradePass = new ShaderPass(GradeShader);
     this.composer.addPass(this.renderPass);
+    this.composer.addPass(this.sanitizePass);
     this.composer.addPass(this.bloomPass);
     this.composer.addPass(this.outputPass);
     this.composer.addPass(this.gradePass);
