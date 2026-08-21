@@ -55,6 +55,9 @@ export class Engine {
       logarithmicDepthBuffer: true,
       powerPreference: 'high-performance',
     });
+    // Clear opaque to the void colour the scenes use: without this the canvas
+    // can composite the page background through wherever nothing was drawn.
+    this.renderer.setClearColor(0x010208, 1);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;

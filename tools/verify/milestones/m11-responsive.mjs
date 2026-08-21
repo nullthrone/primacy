@@ -202,6 +202,22 @@ export default async function run({ page, shot, expect, sleep }) {
   expect(theme.attr === 'dark', `dark theme pinned on <html> (${theme.attr})`);
   expect(theme.accent.toUpperCase() === '#C89E4A', `brass accent resolves to the dark value (${theme.accent})`);
 
+  // The page ground behind the canvas must stay the void, not a UI surface:
+  // where a browser lets the page show through the canvas, a warm grey ground
+  // washes the star field out completely.
+  const ground = await page.evaluate(() => {
+    const lum = (c) => {
+      const [r, g, b] = c.match(/\d+/g).map(Number);
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    return {
+      body: lum(getComputedStyle(document.body).backgroundColor),
+      scene: lum(getComputedStyle(document.getElementById('scene')).backgroundColor),
+    };
+  });
+  expect(ground.body < 12, `page ground behind the canvas is the void (lum=${ground.body.toFixed(1)})`);
+  expect(ground.scene < 12, `#scene ground is the void (lum=${ground.scene.toFixed(1)})`);
+
   await page.evaluate(() => window.__APP__.setSystem('proxima', { warp: false }));
   await sleep(1200);
 
